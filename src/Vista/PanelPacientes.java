@@ -80,17 +80,15 @@ public class PanelPacientes extends javax.swing.JPanel {
         jSeparator1 = new javax.swing.JSeparator();
         txtBuscar = new javax.swing.JTextField();
         jPanel5 = new javax.swing.JPanel();
-        panelGradiante1 = new Vista.PanelGradiante();
-        lbInactivos = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
-        lbActivos = new javax.swing.JLabel();
         panelGradiante2 = new Vista.PanelGradiante();
-        jLabel4 = new javax.swing.JLabel();
-        lbEdadPromedio = new javax.swing.JLabel();
-        panelGradiante3 = new Vista.PanelGradiante();
+        lbActivos = new javax.swing.JLabel();
+        lbInactivos = new javax.swing.JLabel();
+        jPanel3 = new javax.swing.JPanel();
+        panelGradiante1 = new Vista.PanelGradiante();
         lblTotalPacientes = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
+        jPanel4 = new javax.swing.JPanel();
+        panelGradiante3 = new Vista.PanelGradiante();
+        lbEdadPromedio = new javax.swing.JLabel();
 
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -134,10 +132,12 @@ public class PanelPacientes extends javax.swing.JPanel {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(23, 23, 23)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 901, Short.MAX_VALUE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addComponent(jScrollPane2))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 372, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 301, Short.MAX_VALUE)
                         .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 228, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
@@ -176,132 +176,86 @@ public class PanelPacientes extends javax.swing.JPanel {
 
         jPanel5.setLayout(new java.awt.BorderLayout());
 
-        lbInactivos.setFont(new java.awt.Font("Showcard Gothic", 1, 36)); // NOI18N
-        lbInactivos.setForeground(new java.awt.Color(255, 255, 255));
-        lbInactivos.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lbInactivos.setText("00000");
+        lbActivos.setText("jLabel3");
 
-        jLabel6.setFont(new java.awt.Font("Showcard Gothic", 1, 24)); // NOI18N
-        jLabel6.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel6.setText("Pacientes INACTIVOS:");
+        lbInactivos.setText("dsad");
 
-        jLabel7.setFont(new java.awt.Font("Showcard Gothic", 1, 24)); // NOI18N
-        jLabel7.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel7.setText("Pacientes ACTIVOS:");
+        javax.swing.GroupLayout panelGradiante2Layout = new javax.swing.GroupLayout(panelGradiante2);
+        panelGradiante2.setLayout(panelGradiante2Layout);
+        panelGradiante2Layout.setHorizontalGroup(
+            panelGradiante2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelGradiante2Layout.createSequentialGroup()
+                .addContainerGap(136, Short.MAX_VALUE)
+                .addComponent(lbActivos)
+                .addGap(127, 127, 127))
+            .addGroup(panelGradiante2Layout.createSequentialGroup()
+                .addGap(124, 124, 124)
+                .addComponent(lbInactivos)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        panelGradiante2Layout.setVerticalGroup(
+            panelGradiante2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelGradiante2Layout.createSequentialGroup()
+                .addContainerGap(87, Short.MAX_VALUE)
+                .addComponent(lbActivos)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lbInactivos)
+                .addGap(55, 55, 55))
+        );
 
-        lbActivos.setFont(new java.awt.Font("Showcard Gothic", 1, 36)); // NOI18N
-        lbActivos.setForeground(new java.awt.Color(255, 255, 255));
-        lbActivos.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lbActivos.setText("00000");
+        jPanel5.add(panelGradiante2, java.awt.BorderLayout.CENTER);
+
+        add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 80, 300, 180));
+
+        jPanel3.setLayout(new java.awt.BorderLayout());
+
+        lblTotalPacientes.setText("jLabel3");
 
         javax.swing.GroupLayout panelGradiante1Layout = new javax.swing.GroupLayout(panelGradiante1);
         panelGradiante1.setLayout(panelGradiante1Layout);
         panelGradiante1Layout.setHorizontalGroup(
             panelGradiante1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelGradiante1Layout.createSequentialGroup()
-                .addGroup(panelGradiante1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panelGradiante1Layout.createSequentialGroup()
-                        .addGap(12, 12, 12)
-                        .addComponent(lbInactivos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(panelGradiante1Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(panelGradiante1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lbActivos, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, 288, Short.MAX_VALUE))))
-                .addContainerGap())
-            .addGroup(panelGradiante1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(panelGradiante1Layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, 288, Short.MAX_VALUE)
-                    .addContainerGap()))
+                .addGap(73, 73, 73)
+                .addComponent(lblTotalPacientes)
+                .addContainerGap(160, Short.MAX_VALUE))
         );
         panelGradiante1Layout.setVerticalGroup(
             panelGradiante1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelGradiante1Layout.createSequentialGroup()
-                .addGap(43, 43, 43)
-                .addComponent(lbActivos)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel6)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(lbInactivos)
-                .addContainerGap())
-            .addGroup(panelGradiante1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(panelGradiante1Layout.createSequentialGroup()
-                    .addGap(16, 16, 16)
-                    .addComponent(jLabel7)
-                    .addContainerGap(135, Short.MAX_VALUE)))
+            .addGroup(panelGradiante1Layout.createSequentialGroup()
+                .addGap(72, 72, 72)
+                .addComponent(lblTotalPacientes)
+                .addContainerGap(92, Short.MAX_VALUE))
         );
 
-        jPanel5.add(panelGradiante1, java.awt.BorderLayout.CENTER);
+        jPanel3.add(panelGradiante1, java.awt.BorderLayout.LINE_END);
 
-        add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 80, 300, 180));
+        add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 80, 300, 180));
 
-        jLabel4.setFont(new java.awt.Font("Showcard Gothic", 1, 24)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel4.setText("eDAD PROMEDIO");
+        jPanel4.setLayout(new java.awt.BorderLayout());
 
-        lbEdadPromedio.setFont(new java.awt.Font("Showcard Gothic", 1, 48)); // NOI18N
-        lbEdadPromedio.setForeground(new java.awt.Color(255, 255, 255));
-        lbEdadPromedio.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lbEdadPromedio.setText("00000");
-
-        javax.swing.GroupLayout panelGradiante2Layout = new javax.swing.GroupLayout(panelGradiante2);
-        panelGradiante2.setLayout(panelGradiante2Layout);
-        panelGradiante2Layout.setHorizontalGroup(
-            panelGradiante2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelGradiante2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(panelGradiante2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lbEdadPromedio, javax.swing.GroupLayout.DEFAULT_SIZE, 298, Short.MAX_VALUE)
-                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
-        );
-        panelGradiante2Layout.setVerticalGroup(
-            panelGradiante2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelGradiante2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 71, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lbEdadPromedio)
-                .addGap(36, 36, 36))
-        );
-
-        add(panelGradiante2, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 80, 310, -1));
-
-        lblTotalPacientes.setFont(new java.awt.Font("Showcard Gothic", 1, 48)); // NOI18N
-        lblTotalPacientes.setForeground(new java.awt.Color(255, 255, 255));
-        lblTotalPacientes.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblTotalPacientes.setText("00000");
-
-        jLabel3.setFont(new java.awt.Font("Showcard Gothic", 1, 24)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel3.setText("TOTAL PACIENTES:");
+        lbEdadPromedio.setText("jLabel3");
 
         javax.swing.GroupLayout panelGradiante3Layout = new javax.swing.GroupLayout(panelGradiante3);
         panelGradiante3.setLayout(panelGradiante3Layout);
         panelGradiante3Layout.setHorizontalGroup(
             panelGradiante3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelGradiante3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(lblTotalPacientes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-            .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
+                .addContainerGap(119, Short.MAX_VALUE)
+                .addComponent(lbEdadPromedio)
+                .addGap(114, 114, 114))
         );
         panelGradiante3Layout.setVerticalGroup(
             panelGradiante3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelGradiante3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblTotalPacientes)
-                .addContainerGap(37, Short.MAX_VALUE))
+                .addContainerGap(83, Short.MAX_VALUE)
+                .addComponent(lbEdadPromedio)
+                .addGap(81, 81, 81))
         );
 
-        add(panelGradiante3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 80, -1, -1));
+        jPanel4.add(panelGradiante3, java.awt.BorderLayout.CENTER);
+
+        add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 80, -1, 180));
     }// </editor-fold>//GEN-END:initComponents
 
     private void txtBuscarMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtBuscarMousePressed
@@ -379,13 +333,11 @@ public class PanelPacientes extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;

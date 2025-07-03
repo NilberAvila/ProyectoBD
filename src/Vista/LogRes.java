@@ -24,7 +24,7 @@ public class LogRes extends javax.swing.JFrame {
         setLocationRelativeTo(null);
         txtUser.putClientProperty(FlatClientProperties.STYLE, "arc: 20");
         txtPassword.putClientProperty(FlatClientProperties.STYLE, "arc: 20");
-        inicializarPlaceholders();
+        inicializarPlaceholders();        
     }
 
     @SuppressWarnings("unchecked")
@@ -43,6 +43,7 @@ public class LogRes extends javax.swing.JFrame {
         txtUser = new javax.swing.JTextField();
         btnLog = new javax.swing.JButton();
         txtPassword = new javax.swing.JPasswordField();
+        gradientThumbRenderer1 = new org.jdesktop.swingx.color.GradientThumbRenderer();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setLocationByPlatform(true);
@@ -130,6 +131,7 @@ public class LogRes extends javax.swing.JFrame {
         txtPassword.setForeground(new java.awt.Color(204, 204, 204));
         txtPassword.setText("**********");
         jPanel4.add(txtPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 270, 226, 43));
+        jPanel4.add(gradientThumbRenderer1, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 390, -1, -1));
 
         jPanel1.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 0, 510, 550));
 
@@ -248,6 +250,7 @@ public class LogRes extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCerrar;
     private javax.swing.JButton btnLog;
+    private org.jdesktop.swingx.color.GradientThumbRenderer gradientThumbRenderer1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel5;

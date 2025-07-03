@@ -234,7 +234,7 @@ public class FormMenuRecep extends javax.swing.JFrame {
 
     private void btnAgendarCitaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgendarCitaActionPerformed
         EstablecerColor(btnAgendarCita);
-        cambiarVistaPanel(btnAgendarCita, "Agendar Cita", new PanelAgendarCita(colorTemp));
+        cambiarVistaPanel(btnAgendarCita, "Agendar Cita", new PanelRegistrarCitaEmergencia(colorTemp));
     }//GEN-LAST:event_btnAgendarCitaActionPerformed
 
     private void PanelSuperiorMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_PanelSuperiorMouseDragged
