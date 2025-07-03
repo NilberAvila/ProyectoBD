@@ -71,14 +71,14 @@ public abstract class Persona {
     public void setNumDoc(String numDoc) {
         this.numDoc = Validador.validardocIdentidad(numDoc, "Ingrese su doc. de indentidad");
         if (!numDoc.matches("\\d+")) {
-            throw new IllegalArgumentException("El número de documento debe contener solo dígitos.");
+            throw new IllegalArgumentException("El número de documento debe contener solo dígitos");
         }
         if (numDoc.matches("\\d{8}")) {
             this.tipoDoc = "DNI";
         } else if (numDoc.matches("\\d{20}")) {
             this.tipoDoc = "CE";
         } else {
-            throw new IllegalArgumentException("Número de documento inválido: debe tener 8 dígitos (DNI) o 20 dígitos (CE).");
+            throw new IllegalArgumentException("Número de documento inválido: debe tener 8 dígitos (DNI) o 20 dígitos (CE)");
         }
     }
 
@@ -95,10 +95,10 @@ public abstract class Persona {
     }
 
     public void setTelefono(String telefono) {
-        if (!telefono.matches("\\d+")) {
+        if (!telefono.trim().matches("\\d+")) {
             throw new IllegalArgumentException("El número de teléfono debe contener solo numeros");
         }
-        this.telefono = Validador.validarTextoPlaceHolder(telefono, "Ingrese su Numero de Telefono", "El numero de telefono");
+        this.telefono = Validador.validarTextoPlaceHolder(telefono.trim(), "Ingrese su Numero de Telefono", "El numero de telefono");
     }
 
     public LocalDate getFechaNacimiento() {

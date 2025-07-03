@@ -37,4 +37,11 @@ public class ControladorEspecialidades {
     public Especialidad BuscarEspecialidad(String nombreBuscado) throws  Exception{
         return especialidadDAO.BuscarEspecialidad(nombreBuscado);
     }
+    public void ActualizarEsepecialidad(String buscar,String NewNobmre, String NewDescripcion) throws Exception{
+         especialidadDAO.ActualizarEspecialidad(buscar, NewNobmre, NewDescripcion);
+    }
+    
+    public void EliminarEspecialidad(int idespecialdiad) throws Exception{
+         especialidadDAO.EliminarEspecialidad(idespecialdiad);
+    }
 }

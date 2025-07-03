@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -85,4 +86,37 @@ public class EspecialidadDAO {
             throw new SQLException("Error al buscar especialidad: " + e.getMessage());
         }
     } 
+    
+    public void ActualizarEspecialidad(String Buscar, String NewNombre, String NewDescripcion) throws SQLException{
+            try {
+                String sql = "UPDATE Especialidad SET nombre = ?, descripcion = ? WHERE nombre = ?";
+                Connection conn = Conexion.getConexion();
+                PreparedStatement stmt = conn.prepareStatement(sql);
+                stmt.setString(1, NewNombre);
+                stmt.setString(2, NewDescripcion);
+                stmt.setString(3, Buscar);
+          
+                int filasAfectadas = stmt.executeUpdate();
+
+                if (filasAfectadas > 0) {
+                    JOptionPane.showMessageDialog(null, "Especialidad actualizada correctamente.");
+                } 
+            } catch (SQLException e) {
+                throw new SQLException("Error al actualizar especialidad: " + e.getMessage());
+            }
+    }
+    
+    public void EliminarEspecialidad(int IDEspecialdiad) throws SQLException{
+            try {
+                String sql = "DELETE FROM Especialidad WHERE EspecialidadID = ?";
+                Connection conn = Conexion.getConexion();
+                PreparedStatement stmt = conn.prepareStatement(sql);
+                stmt.setInt(1, IDEspecialdiad);         
+                stmt.executeUpdate();      
+                JOptionPane.showMessageDialog(null, "Especialidad eliminada correctamente.");
+            
+            } catch (SQLException e) {
+                throw new SQLException("Error al actualizar especialidad: " + e.getMessage());
+            }
+    }
 }

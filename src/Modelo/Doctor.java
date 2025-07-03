@@ -5,6 +5,8 @@
 package Modelo;
 
 import Util.Validador;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 
 /**
@@ -29,6 +31,19 @@ public class Doctor extends Persona{
 //        this.CodigoColegiatura = CodigoColegiatura;
 //    }
    
+    @Override
+    public void setFechaNacimiento(LocalDate fechaNacimiento) {
+        if (fechaNacimiento == null) {
+            throw new IllegalArgumentException("La fecha de nacimiento no puede ser nula");
+        }
+        LocalDate hoy = LocalDate.now();
+        Period edad = Period.between(fechaNacimiento, hoy);
+        if (edad.getYears() < 25) {
+            throw new IllegalArgumentException("Un doctor debe tener al menos 24 años de edad");
+        }
+        this.fechaNacimiento = fechaNacimiento;
+    }
+
     public int getIdDoctor() {
         return IdDoctor;
     }

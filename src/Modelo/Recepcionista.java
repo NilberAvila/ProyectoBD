@@ -5,6 +5,7 @@
 package Modelo;
 
 import java.time.LocalDate;
+import java.time.Period;
 
 /**
  *
@@ -42,5 +43,20 @@ public class Recepcionista extends Persona{
         }
         this.user = user;
     }
+
+    @Override
+    public void setFechaNacimiento(LocalDate fechaNacimiento) {
+        if (fechaNacimiento == null) {
+            throw new IllegalArgumentException("La fecha de nacimiento no puede ser nula");
+        }
+        LocalDate hoy = LocalDate.now();
+        Period edad = Period.between(fechaNacimiento, hoy);
+        if (edad.getYears() < 19) {
+            throw new IllegalArgumentException("El recepcionoista debe tener al menos 18 años de edad");
+        }
+        this.fechaNacimiento = fechaNacimiento;
+    }
+
+    
     
 }
