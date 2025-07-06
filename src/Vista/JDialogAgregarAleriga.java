@@ -58,7 +58,7 @@ public class JDialogAgregarAleriga extends javax.swing.JDialog {
 
         jLabel24.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel24.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel24.setText("Descripción:");
+        jLabel24.setText("Nombre");
         jPanel1.add(jLabel24, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 130, -1, 30));
 
         txtDescripciònAlergia.setBackground(new java.awt.Color(63, 154, 154));
@@ -95,7 +95,7 @@ public class JDialogAgregarAleriga extends javax.swing.JDialog {
 
         jLabel28.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel28.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel28.setText("Severidad");
+        jLabel28.setText("Descripcion");
         jPanel1.add(jLabel28, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 190, -1, 30));
 
         txtSeveridadAlerg.setBackground(new java.awt.Color(63, 154, 154));
@@ -156,7 +156,7 @@ public class JDialogAgregarAleriga extends javax.swing.JDialog {
                 Alergia alergia = new Alergia();
                 alergia.setTipoAlergia(tipoAlergia);
                 alergia.setNombreAlergia(txtDescripciònAlergia.getText());
-                alergia.setSeveridad(txtSeveridadAlerg.getText());
+                alergia.setDescripcion(txtSeveridadAlerg.getText());
                 ControladorPaciente controladorPaciente = new ControladorPaciente();
                 controladorPaciente.AgregarEspecialdiad(idPaciente, alergia);
                 JOptionPane.showMessageDialog(this, "Registro exitoso", "Exito", JOptionPane.INFORMATION_MESSAGE);

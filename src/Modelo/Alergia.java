@@ -13,8 +13,8 @@ import Util.Validador;
 public class Alergia {
     private int IdAlergia;
     private String NombreAlergia;
-    private String Severidad;
     private String TipoAlergia;
+    private String Descripcion;
 
     public Alergia() {
     }
@@ -23,12 +23,12 @@ public class Alergia {
         this.IdAlergia = idAlergia;
     }
 
-    public Alergia(String NombreAlergia, String Severidad, String TipoAlergia) {
+    public Alergia(String NombreAlergia, String TipoAlergia, String Descripcion) {
         this.NombreAlergia = NombreAlergia;
-        this.Severidad = Severidad;
         this.TipoAlergia = TipoAlergia;
+        this.Descripcion = Descripcion;
     }
-
+    
     public void setIdAlergia(int IdAlergia) {
         this.IdAlergia = IdAlergia;
     }
@@ -45,23 +45,23 @@ public class Alergia {
         this.NombreAlergia = Validador.validarTexto(NombreAlergia, "El nombre de la alergia");
     }
 
-    public String getSeveridad() {
-        return Severidad;
-    }
-
-    public void setSeveridad(String severidad){
-        this.Severidad = Validador.validarTextoPlaceHolder(severidad, "Ingrese descripción", "La severidad");
-    }
-
     public String getTipoAlergia() {
         return TipoAlergia;
     }
 
     public void setTipoAlergia(String TipoAlergia) {
-        this.TipoAlergia = Validador.validarTextoPlaceHolder(TipoAlergia, "Ingrese severidad", "La severidad");
+        this.TipoAlergia = Validador.validarTexto(TipoAlergia, "El tipo");
+    }
+
+    public String getDescripcion() {
+        return Descripcion;
+    }
+
+    public void setDescripcion(String Severidad) {
+        this.Descripcion = Validador.validarTextoPlaceHolder(Severidad, "Ingrese la descripcion ", "La Descripcion ");
     }
     
     public String verAlergia(){
-        return this.NombreAlergia + "->  Severidad: " + this.Severidad + "|  Tipo: "  + this.TipoAlergia;
+        return this.NombreAlergia + "->  Tipo: " + this.TipoAlergia + "    |    Descripcion: "  + this.Descripcion;
     }
 }

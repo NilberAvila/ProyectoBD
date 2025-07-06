@@ -57,7 +57,7 @@ public class EspecialidadDAO {
     }
     
     public void Agregar_Especialidades(Especialidad Especialidades)throws SQLException{
-        String sql = "INSERT INTO Especialidad(nombre,descripcion) VALUES(?,?)";
+        String sql = "INSERT INTO Especialidades(nombre, descripcion) VALUES(?,?)";
         try {Connection conn = Conexion.getConexion();
             PreparedStatement Estmt = conn.prepareStatement(sql);
             Estmt.setString(1, Especialidades.getNombre());

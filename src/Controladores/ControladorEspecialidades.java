@@ -3,18 +3,17 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package Controladores;
-
 import Modelo.Especialidad;
 import Modelo.DAO.EspecialidadDAO;
 import Modelo.DTO.EspecialidadBasicoDTO;
 import java.sql.SQLException;
 import java.util.ArrayList;
-
 /**
  *
  * @author apnil
  */
 public class ControladorEspecialidades {
+    public ArrayList<Especialidad> especialidades = new ArrayList();
     public ArrayList<EspecialidadBasicoDTO> especialidadBasicoDTOs = new ArrayList();
     private final EspecialidadDAO especialidadDAO;
 

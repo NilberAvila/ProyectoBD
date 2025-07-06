@@ -14,8 +14,8 @@ import javax.swing.JOptionPane;
  */
 public class Conexion {
  
-    private static final String url = "jdbc:sqlserver://serverbdandtpoo.database.windows.net:1433;"
-            + "database=SistemaHospitalario;user=AdminBD@serverbdandtpoo;password=TPOO108254.;"
+    private static final String url = "jdbc:sqlserver://proyectobs.database.windows.net:1433;"
+            + "database=SistemaHospitalario;user=AdminBD@serverbdandtpoo;password=ProyectoUPN#;"
             + "encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;";
    
     public static Connection getConexion(){

@@ -482,6 +482,10 @@ public class PanelRegistarDoctor extends javax.swing.JPanel {
     private void bntAgregarEspecialidadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bntAgregarEspecialidadActionPerformed
         int Index = cbEspecialidad.getSelectedIndex();
         Especialidad EspecialidadesSleccionada = lista.get(Index);
+        if (ListaEspecialidadDoctor.contains(EspecialidadesSleccionada)) {
+        JOptionPane.showMessageDialog(this, "Esta especialidad ya ha sido agregada.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+        return;
+        }
         ListaEspecialidadDoctor.add(EspecialidadesSleccionada);
     }//GEN-LAST:event_bntAgregarEspecialidadActionPerformed
 

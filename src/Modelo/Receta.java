@@ -12,10 +12,8 @@ import Util.Validador;
  */
 public class Receta {
     private int IdReceta;
-    private Paciente paciente;
-    private Doctor doctor;
-    private String medicamentosDosis;
-    private String recomendaciones;
+    private String fechaEmision;
+    private String Observaciones;
 
     public Receta() {
         this.paciente = new Paciente();

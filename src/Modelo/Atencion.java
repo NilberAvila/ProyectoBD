@@ -11,7 +11,7 @@ import java.time.LocalDate;
  *
  * @author apnil
  */
-public class Atencion {
+public class Atencion {// ay no va
     private int IdAtencion;
     private Diagnostico diagnostico;
     private Receta receta;

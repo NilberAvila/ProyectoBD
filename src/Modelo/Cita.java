@@ -17,6 +17,7 @@ public class Cita {
     private Paciente pacienteSolicitante;
     private Doctor doctorSolicitado;
     private String EspecialidadSolicitada;
+    private String Motivo; //Agregar stters y gettesr y modficar la implementeacion 
     private boolean Antendida;
 
     public Cita() {

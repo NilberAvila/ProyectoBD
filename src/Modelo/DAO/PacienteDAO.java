@@ -105,7 +105,7 @@ public class PacienteDAO {
                 Alergia alergia = new Alergia(rs.getInt("AlergiaID"));
                 alergia.setNombreAlergia(rs.getString("NombreAlergia"));
                 alergia.setTipoAlergia(rs.getString("TipoAlergia"));
-                alergia.setSeveridad(rs.getString("Severidad"));
+                alergia.setDescripcion(rs.getString("Severidad"));
                 obAlergias.add(alergia);
             }
         }
@@ -285,7 +285,7 @@ public class PacienteDAO {
             pstmt.setInt(1, idPaciente);
             pstmt.setString(2, alergia.getNombreAlergia());
             pstmt.setString(3, alergia.getTipoAlergia());
-            pstmt.setString(4, alergia.getSeveridad());
+            pstmt.setString(4, alergia.getDescripcion());
             pstmt.execute();
         } catch (SQLException e) {
             throw new SQLException("Error al agregar alergia al paciente: " + e.getMessage());

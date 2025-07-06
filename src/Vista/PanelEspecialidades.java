@@ -6,15 +6,13 @@ package Vista;
 
 import Modelo.Especialidad;
 import Controladores.ControladorEspecialidades;
-import Controladores.ControladorPaciente;
 import java.util.ArrayList;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-
 
 /**
  *
@@ -38,7 +36,7 @@ public class PanelEspecialidades extends javax.swing.JPanel {
             modelo.addColumn("Eliminar");
             ControladorEspecialidades controladorEspecialidades = new ControladorEspecialidades();
             ArrayList<Especialidad> Lista = controladorEspecialidades.ObtenerEspecialidadesC();
-
+            
             for(Especialidad esp : Lista){
                 Object [] Fila = {esp.getIdEspecialidad(),esp.getNombre(),esp.getDescripcion(),""};
                 modelo.addRow(Fila);
@@ -76,6 +74,30 @@ public class PanelEspecialidades extends javax.swing.JPanel {
         TablaEspecialidades.getColumnModel().getColumn(2).setCellRenderer(centrado);
         
     }
+    
+    private void eventoTextFiel(){
+        txtBuscarEspecialdiad.getDocument().addDocumentListener(new DocumentListener(){
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                
+            }
+        });
+    }
+    
+    private void ObtenerDatos(){
+        
+    }
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -85,7 +107,6 @@ public class PanelEspecialidades extends javax.swing.JPanel {
         txtBuscarEspecialdiad = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         TablaEspecialidades = new javax.swing.JTable();
-        btnBuscar = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
@@ -95,9 +116,6 @@ public class PanelEspecialidades extends javax.swing.JPanel {
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         txt_ESPECIALIDAD = new javax.swing.JTextField();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        TEXTDESCRIPCION = new javax.swing.JTextArea();
-        labelNombre = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         txtNewDescripcion = new javax.swing.JTextField();
@@ -112,10 +130,7 @@ public class PanelEspecialidades extends javax.swing.JPanel {
         TablaEspecialidades.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
         TablaEspecialidades.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
                 "ID", "Especialidad", "Descripción", "Eliminar"
@@ -144,13 +159,6 @@ public class PanelEspecialidades extends javax.swing.JPanel {
             TablaEspecialidades.getColumnModel().getColumn(3).setResizable(false);
         }
 
-        btnBuscar.setText("Buscar ");
-        btnBuscar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnBuscarActionPerformed(evt);
-            }
-        });
-
         jLabel5.setFont(new java.awt.Font("Comic Sans MS", 0, 14)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(255, 255, 255));
         jLabel5.setText("Ingrese nombre de la especialidad:");
@@ -170,27 +178,24 @@ public class PanelEspecialidades extends javax.swing.JPanel {
                         .addComponent(jLabel6))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGap(49, 49, 49)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 559, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(jPanel3Layout.createSequentialGroup()
                                 .addComponent(jLabel5)
-                                .addGap(18, 18, 18)
-                                .addComponent(txtBuscarEspecialdiad, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(33, 33, 33)
-                                .addComponent(btnBuscar))
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 550, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(36, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtBuscarEspecialdiad)))))
+                .addContainerGap(42, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap(50, Short.MAX_VALUE)
+                .addContainerGap(42, Short.MAX_VALUE)
                 .addComponent(jLabel6)
-                .addGap(18, 18, 18)
+                .addGap(26, 26, 26)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtBuscarEspecialdiad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel5)
-                    .addComponent(btnBuscar))
-                .addGap(30, 30, 30)
+                    .addComponent(jLabel5))
+                .addGap(31, 31, 31)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(44, 44, 44))
         );
@@ -207,7 +212,7 @@ public class PanelEspecialidades extends javax.swing.JPanel {
                 btn_agregarEspecialidad1ActionPerformed(evt);
             }
         });
-        jPanel4.add(btn_agregarEspecialidad1, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 310, -1, -1));
+        jPanel4.add(btn_agregarEspecialidad1, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 180, -1, -1));
 
         btnActualizar.setText("Actualizar");
         btnActualizar.addActionListener(new java.awt.event.ActionListener() {
@@ -215,52 +220,41 @@ public class PanelEspecialidades extends javax.swing.JPanel {
                 btnActualizarActionPerformed(evt);
             }
         });
-        jPanel4.add(btnActualizar, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 510, -1, -1));
-        jPanel4.add(txt_especialidadDescripcion, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 270, 190, -1));
+        jPanel4.add(btnActualizar, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 450, -1, -1));
+        jPanel4.add(txt_especialidadDescripcion, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 140, 190, -1));
 
         jLabel2.setFont(new java.awt.Font("Comic Sans MS", 0, 14)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setText("Descripción:");
-        jPanel4.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 270, -1, -1));
+        jPanel4.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 140, -1, -1));
 
         jLabel3.setFont(new java.awt.Font("Comic Sans MS", 0, 14)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("Especialidad:");
-        jPanel4.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 230, -1, -1));
-        jPanel4.add(txt_ESPECIALIDAD, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 230, 190, -1));
-
-        TEXTDESCRIPCION.setColumns(20);
-        TEXTDESCRIPCION.setRows(5);
-        jScrollPane3.setViewportView(TEXTDESCRIPCION);
-
-        jPanel4.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 60, -1, -1));
-
-        labelNombre.setFont(new java.awt.Font("Comic Sans MS", 0, 14)); // NOI18N
-        labelNombre.setForeground(new java.awt.Color(255, 255, 255));
-        labelNombre.setText("....");
-        jPanel4.add(labelNombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, -1, -1));
+        jPanel4.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 100, -1, -1));
+        jPanel4.add(txt_ESPECIALIDAD, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 100, 190, -1));
 
         jLabel7.setFont(new java.awt.Font("Comic Sans MS", 0, 18)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel7.setText("ACTUALZIAR ESPECIALDIAD");
-        jPanel4.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 380, -1, -1));
+        jLabel7.setText("ACTUALIZAR ESPECIALDIAD");
+        jPanel4.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 320, -1, -1));
 
         jLabel8.setFont(new java.awt.Font("Comic Sans MS", 0, 18)); // NOI18N
         jLabel8.setForeground(new java.awt.Color(255, 255, 255));
         jLabel8.setText("AGREGAR ESPECIALIDAD");
-        jPanel4.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 180, -1, -1));
-        jPanel4.add(txtNewDescripcion, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 470, 190, -1));
+        jPanel4.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 50, -1, -1));
+        jPanel4.add(txtNewDescripcion, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 410, 190, -1));
 
         jLabel9.setFont(new java.awt.Font("Comic Sans MS", 0, 14)); // NOI18N
         jLabel9.setForeground(new java.awt.Color(255, 255, 255));
         jLabel9.setText("Descripción:");
-        jPanel4.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 470, -1, -1));
+        jPanel4.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 410, -1, -1));
 
         jLabel10.setFont(new java.awt.Font("Comic Sans MS", 0, 14)); // NOI18N
         jLabel10.setForeground(new java.awt.Color(255, 255, 255));
         jLabel10.setText("Especialidad:");
-        jPanel4.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 430, -1, -1));
-        jPanel4.add(txtNewNombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 430, 190, -1));
+        jPanel4.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 370, -1, -1));
+        jPanel4.add(txtNewNombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 370, 190, -1));
 
         jPanel1.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 0, 320, 620));
 
@@ -292,25 +286,7 @@ public class PanelEspecialidades extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(this, e.getMessage());
         }     
     }//GEN-LAST:event_btn_agregarEspecialidad1ActionPerformed
-
-    private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
-        try{
-            ControladorEspecialidades controladorEspecialidades = new ControladorEspecialidades();
-            Especialidad esp = controladorEspecialidades.BuscarEspecialidad(txtBuscarEspecialdiad.getText());
-            if(esp != null){
-                labelNombre.setText(esp.getNombre());
-                TEXTDESCRIPCION.setText(esp.getDescripcion());
-                JOptionPane.showMessageDialog(this, "Especialdiad Encontrada","Exito", JOptionPane.INFORMATION_MESSAGE);
-            }
-            else{
-                JOptionPane.showMessageDialog(this, "Especialdiad no Encontrada","Exito", JOptionPane.INFORMATION_MESSAGE);
-            }
-        }
-        catch(Exception e){
-            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }//GEN-LAST:event_btnBuscarActionPerformed
-
+    
     private void btnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarActionPerformed
         try{
             ControladorEspecialidades controladorEspecialidades = new ControladorEspecialidades();
@@ -323,10 +299,8 @@ public class PanelEspecialidades extends javax.swing.JPanel {
     }//GEN-LAST:event_btnActualizarActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextArea TEXTDESCRIPCION;
     private javax.swing.JTable TablaEspecialidades;
     private javax.swing.JButton btnActualizar;
-    private javax.swing.JButton btnBuscar;
     private javax.swing.JButton btn_agregarEspecialidad1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
@@ -340,8 +314,6 @@ public class PanelEspecialidades extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JLabel labelNombre;
     private javax.swing.JTextField txtBuscarEspecialdiad;
     private javax.swing.JTextField txtNewDescripcion;
     private javax.swing.JTextField txtNewNombre;

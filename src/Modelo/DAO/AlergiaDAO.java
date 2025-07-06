@@ -18,7 +18,7 @@ public class AlergiaDAO {
              PreparedStatement stmt = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, alergia.getNombreAlergia());
             stmt.setString(2, alergia.getTipoAlergia());
-            stmt.setString(3, alergia.getSeveridad());
+            stmt.setString(3, alergia.getDescripcion());
             int filasAfectadas = stmt.executeUpdate();
             if (filasAfectadas > 0) {
                 try (ResultSet rs = stmt.getGeneratedKeys()) {

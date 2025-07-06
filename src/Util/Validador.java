@@ -43,7 +43,7 @@ public class Validador {
     }
     public static LocalDate validarFecha(LocalDate fecha) {
         if (fecha == null || fecha.isAfter(LocalDate.now())) {
-            throw new IllegalArgumentException("Fecha inválida.");
+            throw new IllegalArgumentException("Fecha inválida");
         }
         return fecha;
     }
