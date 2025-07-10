@@ -42,8 +42,8 @@ public class PanelAgendarCita extends javax.swing.JPanel {
     private int idpacienteEcontrado = 0;
     private int idDoctorSeleccionado = 0;
     public PanelAgendarCita(Color colortemp) {
-        this.colortemp = colortemp;
         initComponents();
+        this.colortemp = colortemp;
         inicializarPlaceholders();
         try {
             dtpFechaHora.getTimePicker().getSettings().use24HourClockFormat();

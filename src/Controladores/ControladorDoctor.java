@@ -23,7 +23,7 @@ public class ControladorDoctor {
     private final DoctorDAO doctorDAO;
     private final PacienteDAO pacienteDAO;
     
-    public int Agregar_Doctor(Doctor doctor) throws Exception{
+    public int  Agregar_Doctor(Doctor doctor) throws Exception{
         return doctorDAO.Agregar_Doctor(doctor);
     }
     

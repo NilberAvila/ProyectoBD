@@ -21,8 +21,8 @@ public class EspecialidadDAO {
     public ArrayList<EspecialidadBasicoDTO> obtnerEspecialides()throws SQLException{
         ArrayList<EspecialidadBasicoDTO> especialidades = new ArrayList();
         String consulta = """
-                          SELECT EspecialidadID, nombre
-                          FROM Especialidad E
+                          SELECT EspecialidadID, Nombre
+                          FROM Especialidades E;
                           """;
         try {
             Connection con = Conexion.getConexion();
@@ -40,7 +40,7 @@ public class EspecialidadDAO {
     public ArrayList<Especialidad> obtnerEspecialidesC()throws SQLException{
         ArrayList<Especialidad> especialidades = new ArrayList();
         String consulta = """
-                          SELECT * FROM Especialidad E
+                          SELECT * FROM Especialidades E
                           """;
         try{
             Connection con = Conexion.getConexion();
@@ -57,7 +57,7 @@ public class EspecialidadDAO {
     }
     
     public void Agregar_Especialidades(Especialidad Especialidades)throws SQLException{
-        String sql = "INSERT INTO Especialidad(nombre,descripcion) VALUES(?,?)";
+        String sql = "INSERT INTO Especialidades (Nombre, Descripcion) VALUES (?, ?)";
         try {Connection conn = Conexion.getConexion();
             PreparedStatement Estmt = conn.prepareStatement(sql);
             Estmt.setString(1, Especialidades.getNombre());
@@ -87,14 +87,14 @@ public class EspecialidadDAO {
         }
     } 
     
-    public void ActualizarEspecialidad(String Buscar, String NewNombre, String NewDescripcion) throws SQLException{
+    public void ActualizarEspecialidad(Especialidad esp) throws SQLException{
             try {
-                String sql = "UPDATE Especialidad SET nombre = ?, descripcion = ? WHERE nombre = ?";
+                String sql = "UPDATE Especialidades SET Nombre = ?, Descripcion = ? WHERE EspecialidadID = ?";
                 Connection conn = Conexion.getConexion();
                 PreparedStatement stmt = conn.prepareStatement(sql);
-                stmt.setString(1, NewNombre);
-                stmt.setString(2, NewDescripcion);
-                stmt.setString(3, Buscar);
+                stmt.setString(1, esp.getNombre());
+                stmt.setString(2, esp.getDescripcion());
+                stmt.setInt(3, esp.getIdEspecialidad());
           
                 int filasAfectadas = stmt.executeUpdate();
 
@@ -108,7 +108,7 @@ public class EspecialidadDAO {
     
     public void EliminarEspecialidad(int IDEspecialdiad) throws SQLException{
             try {
-                String sql = "DELETE FROM Especialidad WHERE EspecialidadID = ?";
+                String sql = "DELETE FROM Especialidades WHERE EspecialidadID = ?";
                 Connection conn = Conexion.getConexion();
                 PreparedStatement stmt = conn.prepareStatement(sql);
                 stmt.setInt(1, IDEspecialdiad);         

@@ -4,7 +4,6 @@
  */
 package Modelo;
 
-import Util.Validador;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
@@ -14,21 +13,29 @@ import java.util.ArrayList;
  */
 public class Paciente extends Persona{
     private int IdPaciente;
-    private String grupoSanguineo;
+    private GrupoSanguineo grupoSanguineo;
     private ArrayList<Alergia> alergias;
-    private ArrayList<Atencion> HistorialMedico;
 
     public Paciente()
     { 
         this.alergias = new ArrayList();
-        this.HistorialMedico = new ArrayList();
     }
-
+    public Paciente(int idPaciente, String nombre, String apellidoPaterno, String apellidoMaterno,
+                    String numDoc, String tipoDoc, String telefono,
+                    LocalDate fechaNacimiento, String genero,
+                    String correo, String direccion,
+                    GrupoSanguineo grupoSanguineo) {
+        super(nombre, apellidoPaterno, apellidoMaterno, numDoc, tipoDoc, telefono,
+              fechaNacimiento, genero, correo, direccion);
+        this.IdPaciente = idPaciente;
+        this.grupoSanguineo = grupoSanguineo;
+        this.alergias = new ArrayList<>(); // Inicializa lista vacía por defecto
+    }
+    
     public Paciente(String grupoSanguineo, String nombre, String apellidoPaterno, String apellidoMaterno, String numDoc, String tipoDoc, String telefono, LocalDate fechaNacimiento, String genero, String correo, String direccion) {
         super(nombre, apellidoPaterno, apellidoMaterno, numDoc, tipoDoc, telefono, fechaNacimiento, genero, correo, direccion);
-        this.grupoSanguineo = grupoSanguineo;
+        this.grupoSanguineo = new GrupoSanguineo();
         this.alergias = new ArrayList<>();
-        this.HistorialMedico = new ArrayList<>();
     }
     
     public int getIdPaciente() {
@@ -47,29 +54,18 @@ public class Paciente extends Persona{
         this.alergias = alergias;
     }
 
-    public ArrayList<Atencion> getHistorialMedico() {
-        return HistorialMedico;
-    }
-
-    public void setHistorialMedico(ArrayList<Atencion> HistorialMedico) {
-        this.HistorialMedico = HistorialMedico;
-    }
-
-    public String getGrupoSanguineo() {
+    public GrupoSanguineo getGrupoSanguineo() {
         return grupoSanguineo;
     }
 
-    public void setGrupoSanguineo(String grupoSanguineo) {
-        this.grupoSanguineo = Validador.validarTextoPlaceHolder(grupoSanguineo, "Ingrese el tipo de sangre", "El tipo de sangre");
-    }    
+    public void setGrupoSanguineo(GrupoSanguineo grupoSanguineo) {
+        this.grupoSanguineo = grupoSanguineo;
+    }
     
     public void agregarAlergia(Alergia alergia) throws Exception {
         this.alergias.add(alergia);
     }
     
-    public void agregarHistoriaMedico(Atencion atencion) throws Exception {
-        this.HistorialMedico.add(atencion);
-    }
 
     @Override
     public String toString() {

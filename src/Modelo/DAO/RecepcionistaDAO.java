@@ -16,21 +16,22 @@ import java.sql.Statement;
  */
 public class RecepcionistaDAO {
     public void Agregar_Repcionista(Recepcionista recepcionista) throws SQLException{
-        String sql = "INSERT INTO Recepcionista(Nombre,ApellidoPaterno,ApellidoMaterno,NumeroDocumento,TipoDocumento,FechaNacimiento,Genero,Telefono,Correo,Direccion,UsuarioID) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+        String sql = "EXEC RegistrarRecepcionistaUsuario @NombreUsuario = ?, @Contraseña = ?, @Nombre = ?, @ApellidoPaterno = ?, @ApellidoMaterno = ?, @NumeroDocumento = ?, @TipoDocumento = ?, @FechaNacimiento = ?, @Genero = ?, @Telefono = ?, @Correo = ?, @Direccion = ?";
         try {
             Connection conn = Conexion.getConexion();
             PreparedStatement Dstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            Dstmt.setString(1, recepcionista.getNombre());
-            Dstmt.setString(2, recepcionista.getApellidoPaterno());
-            Dstmt.setString(3, recepcionista.getApellidoMaterno());
-            Dstmt.setString(4, recepcionista.getNumDoc());
-            Dstmt.setString(5, recepcionista.getTipoDoc());
-            Dstmt.setDate(6, java.sql.Date.valueOf(recepcionista.getFechaNacimiento()));
-            Dstmt.setString(7, recepcionista.getGenero());
-            Dstmt.setString(8, recepcionista.getTelefono());
-            Dstmt.setString(9, recepcionista.getCorreo());
-            Dstmt.setString(10, recepcionista.getDireccion());                    
-            Dstmt.setInt(11, recepcionista.getUser().getIdUsuario()); 
+            Dstmt.setString(1, recepcionista.getUser().getNombreUsuario());
+            Dstmt.setString(2, recepcionista.getUser().getContraseña());
+            Dstmt.setString(3, recepcionista.getNombre());
+            Dstmt.setString(4, recepcionista.getApellidoPaterno());
+            Dstmt.setString(5, recepcionista.getApellidoMaterno());
+            Dstmt.setString(6, recepcionista.getNumDoc());
+            Dstmt.setString(7, recepcionista.getTipoDoc());
+            Dstmt.setDate(8, java.sql.Date.valueOf(recepcionista.getFechaNacimiento()));
+            Dstmt.setString(9, recepcionista.getGenero());
+            Dstmt.setString(10, recepcionista.getTelefono());
+            Dstmt.setString(11, recepcionista.getCorreo());
+            Dstmt.setString(12, recepcionista.getDireccion());                    
             Dstmt.executeUpdate();    
         }
         catch(SQLException e){

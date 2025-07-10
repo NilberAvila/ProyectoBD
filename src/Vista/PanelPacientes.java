@@ -35,6 +35,7 @@ public class PanelPacientes extends javax.swing.JPanel {
             Eventotxt();
             llenarTablaPacientes(pacientesOriginal);
         } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
     
@@ -53,7 +54,7 @@ public class PanelPacientes extends javax.swing.JPanel {
             lblTotalPacientes.setText(Integer.toString(cp.obtenerCantidadPacientes()));
             lbEdadPromedio.setText(Double.toString(cp.obtenerEdadPromedioPacientes()));
             int[] act = cp.obtenerPacientesActivosInactivos();
-           lbActivos.setText(Integer.toString(act[0]));
+            lbActivos.setText(Integer.toString(act[0]));
             lbInactivos.setText(Integer.toString(act[1]));
         } catch (Exception e) {
             JOptionPane.showMessageDialog(PanelPacientes.this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -332,7 +333,7 @@ public class PanelPacientes extends javax.swing.JPanel {
     }
     
     private void Mostrar(){
-        if (txtBuscar.getText().trim().isEmpty()) {
+        if (txtBuscar.getText().trim().isEmpty() || txtBuscar.getText().equals("Ingrese el documento de identidad del paciente a buscar")) {
             llenarTablaPacientes(pacientesOriginal);
         }
         else{

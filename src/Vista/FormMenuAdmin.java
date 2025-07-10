@@ -58,6 +58,8 @@ public class FormMenuAdmin extends javax.swing.JFrame {
         btnRegistrarDoc = new javax.swing.JButton();
         btnAsignarTurnos = new javax.swing.JButton();
         btnRegistrarRecepcionista = new javax.swing.JButton();
+        btnRegistrarAlergias = new javax.swing.JButton();
+        btnMedicamentos = new javax.swing.JButton();
         PanelTitulo = new javax.swing.JPanel();
         lblTitulo = new javax.swing.JLabel();
         PanelHijo = new javax.swing.JPanel();
@@ -173,7 +175,7 @@ public class FormMenuAdmin extends javax.swing.JFrame {
                 btnRegistrarDocActionPerformed(evt);
             }
         });
-        PanelMenu.add(btnRegistrarDoc, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 350, 360, 80));
+        PanelMenu.add(btnRegistrarDoc, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 430, 360, 80));
 
         btnAsignarTurnos.setBackground(new java.awt.Color(0, 125, 118));
         btnAsignarTurnos.setFont(new java.awt.Font("Comic Sans MS", 1, 24)); // NOI18N
@@ -201,7 +203,35 @@ public class FormMenuAdmin extends javax.swing.JFrame {
                 btnRegistrarRecepcionistaActionPerformed(evt);
             }
         });
-        PanelMenu.add(btnRegistrarRecepcionista, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 270, 360, 80));
+        PanelMenu.add(btnRegistrarRecepcionista, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 350, 360, 80));
+
+        btnRegistrarAlergias.setBackground(new java.awt.Color(0, 125, 118));
+        btnRegistrarAlergias.setFont(new java.awt.Font("Comic Sans MS", 1, 24)); // NOI18N
+        btnRegistrarAlergias.setForeground(new java.awt.Color(255, 255, 255));
+        btnRegistrarAlergias.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Recursos/respiracion-dificultosa (1).png"))); // NOI18N
+        btnRegistrarAlergias.setText("Registrar Alergias");
+        btnRegistrarAlergias.setBorder(null);
+        btnRegistrarAlergias.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        btnRegistrarAlergias.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRegistrarAlergiasActionPerformed(evt);
+            }
+        });
+        PanelMenu.add(btnRegistrarAlergias, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 270, 360, 80));
+
+        btnMedicamentos.setBackground(new java.awt.Color(0, 125, 118));
+        btnMedicamentos.setFont(new java.awt.Font("Comic Sans MS", 1, 24)); // NOI18N
+        btnMedicamentos.setForeground(new java.awt.Color(255, 255, 255));
+        btnMedicamentos.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Recursos/icons8-medicina-externa-medicamentos-prettycons-lineal-prettycons-4-49.png"))); // NOI18N
+        btnMedicamentos.setText("Registrar Medicamentos");
+        btnMedicamentos.setBorder(null);
+        btnMedicamentos.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        btnMedicamentos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnMedicamentosActionPerformed(evt);
+            }
+        });
+        PanelMenu.add(btnMedicamentos, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 510, 360, 80));
 
         jPanel1.add(PanelMenu, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, -10, 360, 730));
 
@@ -256,6 +286,8 @@ public class FormMenuAdmin extends javax.swing.JFrame {
         btnGestionEspecialidad.setBackground(colores.colorPrincipal);
         btnRegistrarDoc.setBackground(colores.colorPrincipal);
         btnRegistrarRecepcionista.setBackground(colores.colorPrincipal);
+        btnRegistrarAlergias.setBackground(colores.colorPrincipal);
+        btnMedicamentos.setBackground(colores.colorPrincipal);
         EstablecerColor(botonSeleccionado);
         lblTitulo.setText(titulo);
         MostrarPanelHijo.Mostrar(panelMostrar, PanelHijo, 970, 620);
@@ -301,6 +333,14 @@ public class FormMenuAdmin extends javax.swing.JFrame {
         cambiarVistaPanel(btnRegistrarRecepcionista, "Registrar Recepcionista", new PanelRegistroRecepcionistas());
     }//GEN-LAST:event_btnRegistrarRecepcionistaActionPerformed
 
+    private void btnRegistrarAlergiasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarAlergiasActionPerformed
+        cambiarVistaPanel(btnRegistrarAlergias, "Registrar Alergias", new PanelRegistrarAlergias());
+    }//GEN-LAST:event_btnRegistrarAlergiasActionPerformed
+
+    private void btnMedicamentosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMedicamentosActionPerformed
+        cambiarVistaPanel(btnMedicamentos, "Registrar Medicamentos", new PanelMedicamentos());
+    }//GEN-LAST:event_btnMedicamentosActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -313,7 +353,9 @@ public class FormMenuAdmin extends javax.swing.JFrame {
     private javax.swing.JPanel PanelTitulo;
     private javax.swing.JButton btnAsignarTurnos;
     private javax.swing.JButton btnGestionEspecialidad;
+    private javax.swing.JButton btnMedicamentos;
     private javax.swing.JButton btnMinimizar;
+    private javax.swing.JButton btnRegistrarAlergias;
     private javax.swing.JButton btnRegistrarDoc;
     private javax.swing.JButton btnRegistrarRecepcionista;
     private javax.swing.JButton jButton1;

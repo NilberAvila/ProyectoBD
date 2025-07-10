@@ -21,6 +21,7 @@ public class PanelEspecialidades extends javax.swing.JPanel {
     /**
      * Creates new form PanelEspecialidades
      */
+    private int idTemporal = 0;
     public PanelEspecialidades() {
         initComponents();
         cargarEspecialdiadesTabla();
@@ -28,14 +29,10 @@ public class PanelEspecialidades extends javax.swing.JPanel {
     }
     private void cargarEspecialdiadesTabla(){
         try{
-            DefaultTableModel  modelo = new DefaultTableModel ();     
-            modelo.addColumn("ID");
-            modelo.addColumn("Especialidad");
-            modelo.addColumn("Descripcion");
-            modelo.addColumn("Eliminar");
+            DefaultTableModel  modelo = (DefaultTableModel)TablaEspecialidades.getModel();     
             ControladorEspecialidades controladorEspecialidades = new ControladorEspecialidades();
             ArrayList<Especialidad> Lista = controladorEspecialidades.ObtenerEspecialidadesC();
-
+            modelo.setRowCount(0);
             for(Especialidad esp : Lista){
                 Object [] Fila = {esp.getIdEspecialidad(),esp.getNombre(),esp.getDescripcion(),""};
                 modelo.addRow(Fila);
@@ -57,7 +54,6 @@ public class PanelEspecialidades extends javax.swing.JPanel {
                     ControladorEspecialidades CE = new ControladorEspecialidades();
                     CE.EliminarEspecialidad(IDespecialidad);
                     cargarEspecialdiadesTabla();
-                    eventoTabla();
                 } catch (Exception e) {
                     JOptionPane.showMessageDialog(null, e.getMessage());
                 }
@@ -100,7 +96,6 @@ public class PanelEspecialidades extends javax.swing.JPanel {
         jLabel9 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
         txtNewNombre = new javax.swing.JTextField();
-        jLabel1 = new javax.swing.JLabel();
 
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -109,10 +104,7 @@ public class PanelEspecialidades extends javax.swing.JPanel {
         TablaEspecialidades.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
         TablaEspecialidades.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
                 "ID", "Especialidad", "Descripción", "Eliminar"
@@ -131,6 +123,11 @@ public class PanelEspecialidades extends javax.swing.JPanel {
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
+            }
+        });
+        TablaEspecialidades.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                TablaEspecialidadesMouseClicked(evt);
             }
         });
         jScrollPane1.setViewportView(TablaEspecialidades);
@@ -259,10 +256,6 @@ public class PanelEspecialidades extends javax.swing.JPanel {
         jPanel4.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 430, -1, -1));
         jPanel4.add(txtNewNombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 430, 190, -1));
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 10)); // NOI18N
-        jLabel1.setText("Ingrsesar el nombre de la especialidad a modificar su descripcion");
-        jPanel4.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 400, 310, 30));
-
         jPanel1.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 0, 320, 620));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -316,13 +309,30 @@ public class PanelEspecialidades extends javax.swing.JPanel {
     private void btnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarActionPerformed
         try{
             ControladorEspecialidades controladorEspecialidades = new ControladorEspecialidades();
-            controladorEspecialidades.ActualizarEsepecialidad(txtBuscarEspecialdiad.getText(), txtNewNombre.getText(), txtNewDescripcion.getText());
+            Especialidad esp = new Especialidad();
+            esp.setIdEspecialidad(idTemporal);
+            esp.setNombre(txtNewNombre.getText());
+            esp.setDescripcion(txtNewDescripcion.getText());
+            controladorEspecialidades.ActualizarEsepecialidad(esp);
             cargarEspecialdiadesTabla();
+            idTemporal = 0;
         }
         catch(Exception e){
             JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnActualizarActionPerformed
+
+    private void TablaEspecialidadesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TablaEspecialidadesMouseClicked
+        int fila = TablaEspecialidades.getSelectedRow();
+        if (fila != -1) {
+            idTemporal = Integer.parseInt(TablaEspecialidades.getValueAt(fila, 0).toString());
+            String nombre = TablaEspecialidades.getValueAt(fila, 1).toString();
+            String descripcion = TablaEspecialidades.getValueAt(fila, 2).toString();
+            txtNewNombre.setText(nombre);
+            txtNewDescripcion.setText(descripcion);
+        }
+        
+    }//GEN-LAST:event_TablaEspecialidadesMouseClicked
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextArea TEXTDESCRIPCION;
@@ -330,7 +340,6 @@ public class PanelEspecialidades extends javax.swing.JPanel {
     private javax.swing.JButton btnActualizar;
     private javax.swing.JButton btnBuscar;
     private javax.swing.JButton btn_agregarEspecialidad1;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

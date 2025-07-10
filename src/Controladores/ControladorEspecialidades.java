@@ -9,7 +9,6 @@ import Modelo.DAO.EspecialidadDAO;
 import Modelo.DTO.EspecialidadBasicoDTO;
 import java.sql.SQLException;
 import java.util.ArrayList;
-
 /**
  *
  * @author apnil
@@ -37,8 +36,9 @@ public class ControladorEspecialidades {
     public Especialidad BuscarEspecialidad(String nombreBuscado) throws  Exception{
         return especialidadDAO.BuscarEspecialidad(nombreBuscado);
     }
-    public void ActualizarEsepecialidad(String buscar,String NewNobmre, String NewDescripcion) throws Exception{
-         especialidadDAO.ActualizarEspecialidad(buscar, NewNobmre, NewDescripcion);
+    
+    public void ActualizarEsepecialidad(Especialidad esp) throws Exception{
+         especialidadDAO.ActualizarEspecialidad(esp);
     }
     
     public void EliminarEspecialidad(int idespecialdiad) throws Exception{

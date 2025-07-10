@@ -13,11 +13,19 @@ import java.time.LocalDateTime;
  */
 public class Cita {
     private int idCita;
-    private LocalDateTime FechaHora;
     private Paciente pacienteSolicitante;
     private Doctor doctorSolicitado;
+    private LocalDateTime FechaHora;
     private String EspecialidadSolicitada;
+    private String Motivo;
     private boolean Antendida;
+
+    public Cita(int idCita, LocalDateTime FechaHora) {
+        this.idCita = idCita;
+        this.FechaHora = FechaHora;
+        this.pacienteSolicitante = new Paciente();
+        this.doctorSolicitado = new Doctor();
+    }
 
     public Cita() {
         this.pacienteSolicitante = new Paciente();
@@ -89,4 +97,11 @@ public class Cita {
     public void setAntendida(boolean Antendida) {
         this.Antendida = Antendida;
     }
+
+    @Override
+    public String toString() {
+        return Integer.toString(idCita);
+    }
+    
+    
 }

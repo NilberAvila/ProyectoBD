@@ -5,66 +5,58 @@
 package Modelo;
 
 import Util.Validador;
-
+import java.time.LocalDate;
 /**
  *
  * @author apnil
  */
 public class Receta {
-    private int IdReceta;
-    private Paciente paciente;
-    private Doctor doctor;
-    private String medicamentosDosis;
-    private String recomendaciones;
+    private int recetaID;
+    private ConsultaMedica consulta;
+    private LocalDate fechEmision;
+    private String observaciones;
 
     public Receta() {
-        this.paciente = new Paciente();
-        this.doctor = new Doctor();
+        this.consulta = new ConsultaMedica();
+    }
+
+    public Receta(int recetaID, ConsultaMedica consulta, LocalDate fechEmision, String observaciones) {
+        this.recetaID = recetaID;
+        this.consulta = consulta;
+        this.fechEmision = fechEmision;
+        this.observaciones = observaciones;
+    }
+
+    public int getRecetaID() {
+        return recetaID;
+    }
+
+    public void setRecetaID(int recetaID) {
+        this.recetaID = recetaID;
+    }
+
+    public ConsultaMedica getConsulta() {
+        return consulta;
+    }
+
+    public void setConsulta(ConsultaMedica consulta) {
+        this.consulta = consulta;
+    }
+
+    public LocalDate getFechEmision() {
+        return fechEmision;
+    }
+
+    public void setFechEmision(LocalDate fechEmision) {
+        this.fechEmision = fechEmision;
+    }
+
+    public String getObservaciones() {
+        return observaciones;
+    }
+
+    public void setObservaciones(String observaciones) {
+        this.observaciones = Validador.validarTexto(observaciones, "Las observaciones");
     }
     
-    public int getIdReceta() {
-        return IdReceta;
-    }
-
-    public void setIdReceta(int idReceta) {
-        this.IdReceta = idReceta;
-    }
-
-    public Paciente getPaciente() {
-        return paciente;
-    }
-
-    public void setPaciente(Paciente paciente)throws Exception{
-        if (paciente == null) {
-            throw new Exception("Ingrese correctamente el paciente");
-        }
-        this.paciente = paciente;
-    }
-
-    public Doctor getDoctor() {
-        return doctor;
-    }
-
-    public void setDoctor(Doctor doctor)throws Exception {
-        if (paciente == null) {
-            throw new Exception("Ingrese correctamente el doctor");
-        }
-        this.doctor = doctor;
-    }
-
-    public String getMedicamentosDosis() {
-        return medicamentosDosis;
-    }
-
-    public void setMedicamentosDosis(String medicamentosDosis) {
-        this.medicamentosDosis = Validador.validarTexto(medicamentosDosis, "Los mediamentos y dosis");
-    }
-
-    public String getRecomendaciones() {
-        return recomendaciones;
-    }
-
-    public void setRecomendaciones(String recomendaciones) {
-        this.recomendaciones = Validador.validarTexto(recomendaciones, "Las recomendaciones");
-    }
 }

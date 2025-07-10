@@ -19,7 +19,7 @@ public class ControladorReceta {
         recetaDAO = new RecetaDAO();
     }
     
-    public int RegistrarReceta(Receta res, int IdDoctor, int idPaciente)throws Exception{
-        return recetaDAO.RegistrarReceta(res, IdDoctor, idPaciente);
+    public int RegistrarReceta(Receta res)throws Exception{
+        return recetaDAO.registrarReceta(res);
     }
 }

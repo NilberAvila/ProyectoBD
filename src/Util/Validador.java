@@ -58,6 +58,12 @@ public class Validador {
         if (fechaHora == null || fechaHora.isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("No se permiten fechas y horas pasadas.");
         }
-    return fechaHora;
+        return fechaHora;
+    }
+    public static LocalDate validarFechaNoPasada(LocalDate fecha) {
+    if (fecha == null || fecha.isBefore(LocalDate.now())) {
+        throw new IllegalArgumentException("No se permiten fechas pasadas.");
+    }
+    return fecha;
 }
 }

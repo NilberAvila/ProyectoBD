@@ -4,61 +4,72 @@
  */
 package Modelo.DAO;
 
-import Modelo.DTO.HistorialMedicoDTO;
 import Estructuras.ListaCircularDoble;
+import Modelo.DTO.HistorialClinicoDTO;
 import java.sql.*;
-
 /**
  *
  * @author apnil
  */
 public class AtencionDAO {
     
-    public void Registrar( int idPaciente, int idDiagnostico, int idReceta)throws Exception{
-        try {
-            Connection con = Conexion.getConexion();
-            String consulta = """
-                INSERT INTO Atencion (PacienteID, DiagnosticoID, RecetaID, Fecha)
-                VALUES (?, ?, ?, CAST(GETDATE() AS DATE))
-            """;
-            PreparedStatement pstmt = con.prepareStatement(consulta);
-            pstmt.setInt(1, idPaciente);
-            pstmt.setInt(2, idDiagnostico);
-            pstmt.setInt(3, idReceta);
+    public ListaCircularDoble<HistorialClinicoDTO> obtenerHistorialPorPaciente(int pacienteID) throws SQLException {
+        ListaCircularDoble<HistorialClinicoDTO> lista = new ListaCircularDoble<>();
 
-            pstmt.executeUpdate();
+        String sql = "SELECT * FROM HistorialClinicoAgrupado WHERE PacienteID = ?";
 
-            con.close();
-        } catch (SQLException e) {
-            throw new Exception("Error al registrar los datos: " + e.getMessage());
+        try (Connection conn = Conexion.getConexion();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, pacienteID);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    HistorialClinicoDTO dto = new HistorialClinicoDTO();
+
+                    dto.setConsultaMedicaID(rs.getInt("ConsultaMedicaID"));
+
+                    // Paciente
+                    dto.setPacienteID(rs.getInt("PacienteID"));
+                    dto.setNombreCompletoPaciente(rs.getString("NombreCompletoPaciente"));
+                    dto.setTelefono(rs.getString("Telefono"));
+                    dto.setEdad(rs.getInt("Edad"));
+                    dto.setTipoSangre(rs.getString("TipoSangre"));
+
+                    // Atención
+                    dto.setTipoAtencion(rs.getString("TipoAtencion"));
+                    dto.setEspecialidadSolicitada(rs.getString("EspecialidadSolicitada"));
+
+                    // Doctor
+                    dto.setDoctorID(rs.getInt("DoctorID"));
+                    dto.setNombreDoctor(rs.getString("NombreDoctor"));
+
+                    // Consulta
+                    dto.setFechaHoraAtencion(rs.getTimestamp("FechaHoraAtencion"));
+                    dto.setDiagnostico(rs.getString("Diagnostico"));
+
+                    // Tratamiento
+                    dto.setTratamientoID(rs.getObject("TratamientoID") != null ? rs.getInt("TratamientoID") : null);
+                    dto.setTipoTratamiento(rs.getString("TipoTratamiento"));
+                    dto.setFechaInicio(rs.getDate("FechaInicio"));
+                    dto.setFechaFin(rs.getDate("FechaFin"));
+                    dto.setIndicaciones(rs.getString("Indicaciones"));
+
+                    // Receta
+                    dto.setRecetaID(rs.getObject("RecetaID") != null ? rs.getInt("RecetaID") : null);
+                    dto.setFechEmision(rs.getDate("FechEmision"));
+                    dto.setObservaciones(rs.getString("Observaciones"));
+
+                    // Medicamentos
+                    dto.setMedicamentos(rs.getString("Medicamentos"));
+
+                    lista.agregarFinal(dto);
+                }
+            }
+
+        } catch (SQLException ex) {
+            throw new SQLException("Error al obtener historial del paciente ID " + pacienteID + ": " + ex.getMessage(), ex);
         }
-    }
-    
-    public ListaCircularDoble<HistorialMedicoDTO> ObtenerHistorial(int idPaciente) throws SQLException{
-        ListaCircularDoble<HistorialMedicoDTO> historial = new ListaCircularDoble();
-        String consulta = """
-                          EXEC GenerarHistorialMedico @idPaciente = ?
-                          """;
-        try {
-            Connection con = Conexion.getConexion();
-            PreparedStatement pstmt = con.prepareStatement(consulta);
-            pstmt.setInt(1, idPaciente);
-            ResultSet rs = pstmt.executeQuery();
-            while (rs.next()) {
-                HistorialMedicoDTO hist = new HistorialMedicoDTO();
-                hist.setAtencionID(rs.getInt("AtencionID"));
-                hist.setNombrePaciente(rs.getString("NombrePaciente"));
-                hist.setNombreDoctor(rs.getString("NombreDoctor"));
-                hist.setSintomas(rs.getString("Sintomas"));
-                hist.setEnfermedadDiagnosticada(rs.getString("EnfermedadDiagnostica"));
-                hist.setRecomendaciones(rs.getString("Recomendaciones"));
-                hist.setMedicamentosDosis(rs.getString("MedicamentosDosis"));
-                hist.setFecha(rs.getString("Fecha"));
-                historial.agregarFinal(hist);
-            }            
-        } catch (SQLException e) {
-            throw new SQLException("Error al obtener los datos del historial: " + e.getMessage());
-        }
-        return historial;
+        return lista;
     }
 }

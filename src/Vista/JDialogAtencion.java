@@ -5,19 +5,29 @@
 package Vista;
 
 import Modelo.Alergia;
-import Modelo.Diagnostico;
 import Modelo.Receta;
-import Controladores.ControladorAtencion;
-import Controladores.ControladorDiagnostico;
+import Controladores.ControladorConsulta;
 import Controladores.ControladorDoctor;
+import Controladores.ControladorMedicamentos;
 import Controladores.ControladorPaciente;
 import Controladores.ControladorReceta;
+import Controladores.ControladorTratamiento;
+import Modelo.AsignacionMedicamento;
+import Modelo.Cita;
+import Modelo.ConsultaMedica;
 import Modelo.DTO.PacienteDetalleDTO;
+import Modelo.Emergencia;
+import Modelo.Tratamiento;
 import com.formdev.flatlaf.FlatClientProperties;
 import javax.swing.JOptionPane;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
 import java.io.FileOutputStream;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 /**
  *
  * @author apnil
@@ -27,23 +37,32 @@ public class JDialogAtencion extends javax.swing.JDialog {
      * Creates new form JDialogAtencion
      */
     int xMouse, yMouse;
-    private int idPaciente;
     private int idDoctor;
     private final ControladorPaciente controladorPaciente= new ControladorPaciente();
     private final ControladorDoctor controladorDoctor = new ControladorDoctor();
-    
+    private Cita citaAtender;
+    private Emergencia emergenciaAtender;
+    private int idPaciente;
+    ArrayList<AsignacionMedicamento> asignacionMedicamentos;
     public JDialogAtencion(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
     }
 
-    public JDialogAtencion(java.awt.Frame parent, boolean modal, int idPaciente, int IdDoctor) {
+    public JDialogAtencion(java.awt.Frame parent, boolean modal, Cita citaAtender, Emergencia emergenciaAtender) {
         this(parent, modal);
-        this.idPaciente = idPaciente;
-        this.idDoctor = IdDoctor;
+        this.citaAtender = citaAtender;
+        this.emergenciaAtender = emergenciaAtender;
+
+        if (citaAtender != null) {
+            this.idDoctor = citaAtender.getDoctorSolicitado().getIdDoctor();
+            this.idPaciente = citaAtender.getPacienteSolicitante().getIdPaciente();
+        } else if (emergenciaAtender != null) {
+            this.idDoctor = emergenciaAtender.getDoctorSolicitado().getIdDoctor();
+            this.idPaciente = emergenciaAtender.getPacienteSolicitante().getIdPaciente(); // Asegúrate que este método exista
+        }
         AplicarEstilos();
         MostrarDatosPaciente();
-        
     }
     
     private void AplicarEstilos(){
@@ -55,16 +74,22 @@ public class JDialogAtencion extends javax.swing.JDialog {
     
     private void MostrarDatosPaciente(){
         try {
-            PacienteDetalleDTO pac = controladorPaciente.pacientePorIdBasico(idPaciente);
-            txtNombre.setText(pac.getNombreCompleto());
-            txtGenero.setText(pac.getGenero());
-            txtEdad.setText(Integer.toString(pac.getEdad()));
-            txtTipoSangre.setText(pac.getGrupoSanguineo());
-            String aler = "";
-            for (Alergia a : pac.getAlergias()) {
-                aler += a.verAlergia()+ "\n";
+            PacienteDetalleDTO pac;
+            if (citaAtender != null) {
+                pac = controladorPaciente.pacientePorIdBasico(citaAtender.getPacienteSolicitante().getIdPaciente());
             }
-            txtAlergias.setText(aler);
+            else{
+                pac = controladorPaciente.pacientePorIdBasico(emergenciaAtender.getPacienteSolicitante().getIdPaciente());
+            }
+            txtNombre.setText(pac.getNombreCompleto());
+                txtGenero.setText(pac.getGenero());
+                txtEdad.setText(Integer.toString(pac.getEdad()));
+                txtTipoSangre.setText(pac.getGrupoSanguineo());
+                String aler = "";
+                for (Alergia a : pac.getAlergias()) {
+                    aler += a.verAlergia()+ "\n";
+                }
+                txtAlergias.setText(aler);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, e.getMessage());
         }
@@ -72,7 +97,12 @@ public class JDialogAtencion extends javax.swing.JDialog {
     
     private void Atendida(){
         try {
-            controladorPaciente.citaAtendida(idPaciente);
+            if (citaAtender != null) {
+                controladorPaciente.citaAtendida(citaAtender.getPacienteSolicitante().getIdPaciente());
+            }
+            else{
+                controladorPaciente.emergenciaAtendida(emergenciaAtender.getPacienteSolicitante().getIdPaciente());
+            }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, e.getMessage());
         }
@@ -80,18 +110,32 @@ public class JDialogAtencion extends javax.swing.JDialog {
     
     private void GenerarReceta(){
         try {
+            String medicamentosReceta = "";
+            for (AsignacionMedicamento asmed : asignacionMedicamentos) {
+                medicamentosReceta += asmed.toString() + "\n";
+            }
+            
             String doc = controladorDoctor.obtenerNombreDoctor(idDoctor);
             String pac = controladorPaciente.obtenerNombrePaciente(idPaciente);
             String fechaHora = new java.text.SimpleDateFormat("yyyyMMdd_HHmmss").format(new java.util.Date());
+            String fechaMostrada = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new java.util.Date());
             String nombreArchivo = "recetas/receta_paciente_" + idPaciente + "_" + fechaHora + ".pdf";
+            
             Document document = new Document();
             PdfWriter.getInstance(document, new FileOutputStream(nombreArchivo));
             document.open();
+
             Font tituloFont = new Font(Font.FontFamily.HELVETICA, 16, Font.BOLD);
             Paragraph titulo = new Paragraph("Receta Médica", tituloFont);
             titulo.setAlignment(Element.ALIGN_CENTER);
-            titulo.setSpacingAfter(20);
+            titulo.setSpacingAfter(10);
             document.add(titulo);
+            
+            Font fechaFont = new Font(Font.FontFamily.HELVETICA, 12, Font.NORMAL);
+            Paragraph fecha = new Paragraph("Fecha de emisión: " + fechaMostrada, fechaFont);
+            fecha.setAlignment(Element.ALIGN_CENTER);
+            fecha.setSpacingAfter(20);
+            document.add(fecha);
 
             PdfPTable table = new PdfPTable(2);
             table.setWidthPercentage(100);
@@ -115,43 +159,50 @@ public class JDialogAtencion extends javax.swing.JDialog {
             table.addCell("Nombre del Paciente");
             table.addCell(pac);
 
-            table.addCell("Síntomas");
-            table.addCell(txtSintomas.getText());
-
-            table.addCell("Enfermedad Diagnosticada");
-            table.addCell(txtEnfermedadDiagnosticada.getText());
+            table.addCell("Diagnostico");
+            table.addCell(txtDiagnostico.getText());
 
             table.addCell("Medicamentos y Dosis");
-            table.addCell(txtMedicamentosDosis.getText());
+            table.addCell(medicamentosReceta);
 
-            table.addCell("Recomendaciones");
-            table.addCell(txtRecomendaciones.getText());
+            table.addCell("Observaciones");
+            table.addCell(txtObservaciones.getText());
+            
+            table.addCell("Tipo tratamiento");
+            table.addCell(txtTipoTratamiento.getText());
+            
+            table.addCell("Indicaciones");
+            table.addCell(txtIndicaciones.getText());
 
             document.add(table);
             document.close();
 
             JOptionPane.showMessageDialog(this, "Receta PDF generada exitosamente:\n" + nombreArchivo, "Éxito", JOptionPane.INFORMATION_MESSAGE);
-
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error al generar el PDF:\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        txtEnfermedadDiagnosticada = new javax.swing.JTextArea();
-        Diagnostico = new javax.swing.JLabel();
         Diagnostico1 = new javax.swing.JLabel();
-        Diagnostico2 = new javax.swing.JLabel();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        txtMedicamentosDosis = new javax.swing.JTextArea();
         jScrollPane4 = new javax.swing.JScrollPane();
-        txtSintomas = new javax.swing.JTextArea();
+        txtDiagnostico = new javax.swing.JTextArea();
+        Diagnostico2 = new javax.swing.JLabel();
+        btnHabilitar = new javax.swing.JButton();
+        jPanel5 = new javax.swing.JPanel();
+        txtTipoTratamiento = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        dtpInicio = new com.github.lgooddatepicker.components.DatePicker();
+        dtpFin = new com.github.lgooddatepicker.components.DatePicker();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        txtIndicaciones = new javax.swing.JTextArea();
+        jLabel9 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
@@ -167,12 +218,13 @@ public class JDialogAtencion extends javax.swing.JDialog {
         jLabel10 = new javax.swing.JLabel();
         txtAgregarAlergia = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
-        btnTerminar = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
-        txtRecomendaciones = new javax.swing.JTextArea();
+        txtObservaciones = new javax.swing.JTextArea();
         Diagnostico3 = new javax.swing.JLabel();
-        btnVerHistorial = new javax.swing.JButton();
+        txtReceta = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
+        btnVerHistorial = new javax.swing.JButton();
+        btnTerminar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setUndecorated(true);
@@ -180,26 +232,84 @@ public class JDialogAtencion extends javax.swing.JDialog {
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
-        txtEnfermedadDiagnosticada.setColumns(20);
-        txtEnfermedadDiagnosticada.setRows(5);
-        jScrollPane1.setViewportView(txtEnfermedadDiagnosticada);
-
-        Diagnostico.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        Diagnostico.setText("Sintomas");
-
+        Diagnostico1.setText("Diagnostico");
         Diagnostico1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        Diagnostico1.setText("Enfermedad Diagnosticada");
 
+        txtDiagnostico.setColumns(20);
+        txtDiagnostico.setRows(5);
+        jScrollPane4.setViewportView(txtDiagnostico);
+
+        Diagnostico2.setText("Tratamiento: En caso ser necesario");
         Diagnostico2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        Diagnostico2.setText("Medicamentos - Dosis");
 
-        txtMedicamentosDosis.setColumns(20);
-        txtMedicamentosDosis.setRows(5);
-        jScrollPane3.setViewportView(txtMedicamentosDosis);
+        btnHabilitar.setText("Disabled");
+        btnHabilitar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnHabilitarActionPerformed(evt);
+            }
+        });
 
-        txtSintomas.setColumns(20);
-        txtSintomas.setRows(5);
-        jScrollPane4.setViewportView(txtSintomas);
+        txtTipoTratamiento.setForeground(new java.awt.Color(153, 153, 153));
+
+        jLabel1.setText("Tipo:");
+
+        jLabel2.setText("Inicio:");
+
+        jLabel4.setText("Fin:");
+
+        txtIndicaciones.setColumns(20);
+        txtIndicaciones.setRows(5);
+        jScrollPane1.setViewportView(txtIndicaciones);
+
+        jLabel9.setText("Indicaciones:");
+
+        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+        jPanel5.setLayout(jPanel5Layout);
+        jPanel5Layout.setHorizontalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addGap(18, 18, 18)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel4)
+                            .addComponent(jLabel2))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(dtpInicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(dtpFin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtTipoTratamiento, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 43, Short.MAX_VALUE)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 261, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel9))
+                .addGap(22, 22, 22))
+        );
+        jPanel5Layout.setVerticalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtTipoTratamiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel9))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel2)
+                            .addComponent(dtpInicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel4)
+                            .addComponent(dtpFin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                .addContainerGap(12, Short.MAX_VALUE))
+        );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -207,34 +317,30 @@ public class JDialogAtencion extends javax.swing.JDialog {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(20, 20, 20)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(Diagnostico)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(Diagnostico1)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(Diagnostico2)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(22, 22, 22))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(Diagnostico2)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnHabilitar))
+                    .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jScrollPane4))
+                .addContainerGap(14, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(23, 23, 23)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(Diagnostico)
-                    .addComponent(Diagnostico2))
+                .addComponent(Diagnostico1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(Diagnostico1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane3))
-                .addGap(16, 16, 16))
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(Diagnostico2)
+                    .addComponent(btnHabilitar))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(14, Short.MAX_VALUE))
         );
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
@@ -292,26 +398,18 @@ public class JDialogAtencion extends javax.swing.JDialog {
 
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
 
-        btnTerminar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        btnTerminar.setText("Terminar Consulta");
-        btnTerminar.addActionListener(new java.awt.event.ActionListener() {
+        txtObservaciones.setColumns(20);
+        txtObservaciones.setRows(5);
+        jScrollPane2.setViewportView(txtObservaciones);
+
+        Diagnostico3.setText("Observaciones");
+        Diagnostico3.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+
+        txtReceta.setText("Elaborar Receta");
+        txtReceta.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        txtReceta.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnTerminarActionPerformed(evt);
-            }
-        });
-
-        txtRecomendaciones.setColumns(20);
-        txtRecomendaciones.setRows(5);
-        jScrollPane2.setViewportView(txtRecomendaciones);
-
-        Diagnostico3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        Diagnostico3.setText("Recomendaciones");
-
-        btnVerHistorial.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        btnVerHistorial.setText("Ver Historial Medico");
-        btnVerHistorial.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnVerHistorialActionPerformed(evt);
+                txtRecetaActionPerformed(evt);
             }
         });
 
@@ -321,14 +419,16 @@ public class JDialogAtencion extends javax.swing.JDialog {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGap(23, 23, 23)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(Diagnostico3)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 550, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                        .addComponent(btnVerHistorial, javax.swing.GroupLayout.PREFERRED_SIZE, 219, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnTerminar, javax.swing.GroupLayout.PREFERRED_SIZE, 219, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(Diagnostico3)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(174, 174, 174)
+                .addComponent(txtReceta, javax.swing.GroupLayout.PREFERRED_SIZE, 231, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(183, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -336,12 +436,10 @@ public class JDialogAtencion extends javax.swing.JDialog {
                 .addGap(16, 16, 16)
                 .addComponent(Diagnostico3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnTerminar, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnVerHistorial, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(18, Short.MAX_VALUE))
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(txtReceta, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jPanel4.setBackground(new java.awt.Color(204, 204, 204));
@@ -358,12 +456,28 @@ public class JDialogAtencion extends javax.swing.JDialog {
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGap(0, 970, Short.MAX_VALUE)
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 40, Short.MAX_VALUE)
         );
+
+        btnVerHistorial.setText("Ver Historial Medico");
+        btnVerHistorial.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnVerHistorial.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnVerHistorialActionPerformed(evt);
+            }
+        });
+
+        btnTerminar.setText("Terminar Consulta");
+        btnTerminar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnTerminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnTerminarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -371,13 +485,17 @@ public class JDialogAtencion extends javax.swing.JDialog {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
-                .addGap(14, 14, 14)
-                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 311, Short.MAX_VALUE)
+                .addGap(19, 19, 19)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 325, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(btnVerHistorial, javax.swing.GroupLayout.PREFERRED_SIZE, 219, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnTerminar, javax.swing.GroupLayout.PREFERRED_SIZE, 219, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(15, 15, 15))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -385,12 +503,16 @@ public class JDialogAtencion extends javax.swing.JDialog {
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 496, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(11, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnVerHistorial, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnTerminar, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(19, Short.MAX_VALUE))
         );
 
         pack();
@@ -404,35 +526,58 @@ public class JDialogAtencion extends javax.swing.JDialog {
     }//GEN-LAST:event_jPanel4MouseDragged
 
     private void jPanel4MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel4MouseMoved
-        // TODO add your handling code here:
         xMouse = evt.getX();
         yMouse = evt.getY();
     }//GEN-LAST:event_jPanel4MouseMoved
 
     private void btnTerminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTerminarActionPerformed
         try {
+            if (asignacionMedicamentos.isEmpty()) {
+                JOptionPane.showMessageDialog(rootPane, "No puede continuasr sin asignar una receta", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
             int opcion = JOptionPane.showConfirmDialog(rootPane, "¿Esta seguro de terminar la consulta?", "Confirmacion", JOptionPane.YES_NO_OPTION);
             if (opcion == JOptionPane.YES_OPTION) {
+                ConsultaMedica consultaMedica = new ConsultaMedica();
+                consultaMedica.setCita(citaAtender);
+                consultaMedica.setEmergencia(emergenciaAtender);
+                consultaMedica.setFechaHoraAtencion(LocalDateTime.now());
+                consultaMedica.setDiagnostico(txtDiagnostico.getText());
                 Receta recetanueva = new Receta();
-                recetanueva.setMedicamentosDosis(txtMedicamentosDosis.getText());
-                recetanueva.setRecomendaciones(txtRecomendaciones.getText());
-                Diagnostico diag = new Diagnostico();
-                diag.setSintomas(txtSintomas.getText());
-                diag.setEnfermedadDiagnosticada(txtEnfermedadDiagnosticada.getText());
-                ControladorReceta controladorReceta =  new ControladorReceta();
-                ControladorDiagnostico controladorDiagnostico = new ControladorDiagnostico();
-                ControladorAtencion controladorAtencion = new ControladorAtencion();
-                int idReceta = controladorReceta.RegistrarReceta(recetanueva, idDoctor, idPaciente);
-                int idDiagnostico = controladorDiagnostico.RegistrarDiagnostico(diag, idDoctor, idPaciente);
-                controladorAtencion.Registrar(idPaciente, idDiagnostico, idReceta);
+                //recetanueva.getConsulta().setConsultaMedicaID();          obtener codconsulta para receta y tratamiento
+                recetanueva.setFechEmision(LocalDate.now());
+                recetanueva.setObservaciones(txtObservaciones.getText());
+                // obtener recepta para asigmendicamtos
+
+                //registrar consulta primero
+                ControladorConsulta controladorConsulta = new ControladorConsulta();
+                ControladorReceta controladorReceta = new ControladorReceta();
+                ControladorTratamiento controladorTratamiento = new ControladorTratamiento();
+                ControladorMedicamentos controladorMedicamentos = new ControladorMedicamentos();
+                int idConsulta = controladorConsulta.registrarConsulta(consultaMedica);
+                recetanueva.getConsulta().setConsultaMedicaID(idConsulta);
+                
+                if (btnHabilitar.getText().equals("Disabled")) {
+                    Tratamiento nuevoTratamiento = new Tratamiento();
+                    nuevoTratamiento.setTipo(txtTipoTratamiento.getText());
+                    nuevoTratamiento.setFechaInicio(dtpInicio.getDate());
+                    nuevoTratamiento.setFechaFin(dtpFin.getDate());
+                    nuevoTratamiento.setIndicaciones(txtIndicaciones.getText());
+                    nuevoTratamiento.getConsulta().setConsultaMedicaID(idConsulta);
+                    controladorTratamiento.registrarTratamiento(nuevoTratamiento);
+                }
+                int idReceta = controladorReceta.RegistrarReceta(recetanueva);
+                for (AsignacionMedicamento asmed : asignacionMedicamentos) {
+                    asmed.getReceta().setRecetaID(idReceta);
+                    controladorMedicamentos.registrarAsignacionMedicamento(asmed);
+                }
                 GenerarReceta();
                 Atendida();
-                JOptionPane.showMessageDialog(rootPane, "Receta generada, atencion terminada", "Exito", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(rootPane, "Se culmino la atencion y se genero receta", "Exito", JOptionPane.INFORMATION_MESSAGE);
                 dispose();
             }
             else if(opcion == JOptionPane.NO_OPTION){
                 JOptionPane.showMessageDialog(rootPane, "No se genero la receta", "Advertencia", JOptionPane.INFORMATION_MESSAGE);
-
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, e.getMessage());
@@ -440,52 +585,80 @@ public class JDialogAtencion extends javax.swing.JDialog {
     }//GEN-LAST:event_btnTerminarActionPerformed
 
     private void btnVerHistorialActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVerHistorialActionPerformed
-        JDialogHistorialMedico a = new JDialogHistorialMedico(this, true, idPaciente);
+        JDialogHistorialMedico a = new JDialogHistorialMedico(this, true, citaAtender.getPacienteSolicitante().getIdPaciente());
         a.setLocationRelativeTo(null);
         a.setVisible(true); 
     }//GEN-LAST:event_btnVerHistorialActionPerformed
 
     private void txtAgregarAlergiaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtAgregarAlergiaActionPerformed
-        JDialogAgregarAleriga a = new JDialogAgregarAleriga(this, true, idPaciente);
+        JDialogAgregarAleriga a = new JDialogAgregarAleriga((JFrame)SwingUtilities.getWindowAncestor(JDialogAtencion.this), true);
         a.setLocationRelativeTo(null);
         a.setVisible(true); 
         MostrarDatosPaciente();
     }//GEN-LAST:event_txtAgregarAlergiaActionPerformed
-    /**
-     * @param args the command line arguments
-     */
+
+    private void txtRecetaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtRecetaActionPerformed
+        JDialgoCreacionReceta b = new JDialgoCreacionReceta(this, true);
+        b.setLocationRelativeTo(null);
+        b.setVisible(true); 
+        asignacionMedicamentos = b.getAsignacionMedicamentos();
+    }//GEN-LAST:event_txtRecetaActionPerformed
+
+    private void btnHabilitarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHabilitarActionPerformed
+        if (btnHabilitar.getText().equals("Disabled")) {
+            btnHabilitar.setText("Enabled");
+            txtTipoTratamiento.setEnabled(false);
+            dtpInicio.setEnabled(false);
+            dtpFin.setEnabled(false);
+            txtIndicaciones.setEnabled(false);
+        }
+        else{
+            btnHabilitar.setText("Disabled");
+            txtTipoTratamiento.setEnabled(true);
+            dtpInicio.setEnabled(true);
+            dtpFin.setEnabled(true);
+            txtIndicaciones.setEnabled(true);
+        }
+    }//GEN-LAST:event_btnHabilitarActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel Diagnostico;
     private javax.swing.JLabel Diagnostico1;
     private javax.swing.JLabel Diagnostico2;
     private javax.swing.JLabel Diagnostico3;
+    private javax.swing.JButton btnHabilitar;
     private javax.swing.JButton btnTerminar;
     private javax.swing.JButton btnVerHistorial;
+    private com.github.lgooddatepicker.components.DatePicker dtpFin;
+    private com.github.lgooddatepicker.components.DatePicker dtpInicio;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JButton txtAgregarAlergia;
     private javax.swing.JTextArea txtAlergias;
+    private javax.swing.JTextArea txtDiagnostico;
     private javax.swing.JTextField txtEdad;
-    private javax.swing.JTextArea txtEnfermedadDiagnosticada;
     private javax.swing.JTextField txtGenero;
-    private javax.swing.JTextArea txtMedicamentosDosis;
+    private javax.swing.JTextArea txtIndicaciones;
     private javax.swing.JTextField txtNombre;
-    private javax.swing.JTextArea txtRecomendaciones;
-    private javax.swing.JTextArea txtSintomas;
+    private javax.swing.JTextArea txtObservaciones;
+    private javax.swing.JButton txtReceta;
     private javax.swing.JTextField txtTipoSangre;
+    private javax.swing.JTextField txtTipoTratamiento;
     // End of variables declaration//GEN-END:variables
 }

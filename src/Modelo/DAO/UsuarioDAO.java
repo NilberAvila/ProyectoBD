@@ -40,8 +40,7 @@ public class UsuarioDAO {
     public int obtenerIdDoctor(int idUsuario)throws SQLException{
         int idDoc = 0;
         String consulta = """
-                          SELECT DoctorID FROM Doctor
-                          WHERE UsuarioId = ?
+                          SELECT DoctorID FROM Doctores WHERE UsuarioID = ?;
                           """;
         try(Connection con = Conexion.getConexion();
             PreparedStatement pstmt = con.prepareStatement(consulta)){
@@ -59,8 +58,9 @@ public class UsuarioDAO {
     public int[] obtenerIdAdministrador(int idUsuario)throws SQLException{
         int[] datos = new int[2];
         String consulta = """
-                          SELECT AdministradorID, NivelAcceso  FROM Administrador
-                          WHERE UsuarioId = ?
+                          SELECT AdministradorID, NivelAcceso  
+                          FROM Administradores
+                          WHERE UsuarioID = ?;
                           """;
         try(Connection con = Conexion.getConexion();
             PreparedStatement pstmt = con.prepareStatement(consulta)){
@@ -77,7 +77,7 @@ public class UsuarioDAO {
     }
     
     public int RegistrarUser(Usuario usuario) throws SQLException{
-        String sql = "INSERT INTO Usuario(NombreUsuario,Contraseña,Rol)VALUES(?,?,?)";
+        String sql = "INSERT INTO Usuarios (NombreUsuario, Contraseña, Rol) VALUES (?, ?, ?)";
         try (Connection conn = Conexion.getConexion();
             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             pstmt.setString(1, usuario.getNombreUsuario());

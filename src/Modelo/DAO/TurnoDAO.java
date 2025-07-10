@@ -4,12 +4,10 @@
  */
 package Modelo.DAO;
 
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Time;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
@@ -24,7 +22,14 @@ public class TurnoDAO {
          try {
             Connection con = Conexion.getConexion();
             
-            String consulta = "SELECT COUNT(*) FROM Doctor_Turno TD JOIN Turno T ON T.TurnoID = TD.TurnoID WHERE TD.DoctorID = ? AND TD.NombreDia = ? AND(T.HoraInicio < CAST(? AS TIME) AND T.HoraFin > CAST(? AS TIME))";
+            String consulta = """
+                              SELECT COUNT(*) 
+                              FROM AsignacionTurno TD 
+                              JOIN Turnos T ON T.TurnoID = TD.TurnoID 
+                              WHERE TD.DoctorID = ? 
+                                AND TD.NombreDia = ? 
+                                AND (T.HoraInicio < CAST(? AS TIME) AND T.HoraFin > CAST(? AS TIME));
+                              """;
             PreparedStatement pstmt = con.prepareStatement(consulta);
             for(DayOfWeek dia :DiaSelecionado){
                 pstmt.setInt(1, IdDoctor);

@@ -368,6 +368,7 @@ public class PanelRegistroRecepcionistas extends javax.swing.JPanel {
             }
         });
     }
+    
     private void eventotxtApellidoPaterno(){
         txtAPaterno.getDocument().addDocumentListener(new javax.swing.event.DocumentListener(){
             @Override
@@ -385,6 +386,7 @@ public class PanelRegistroRecepcionistas extends javax.swing.JPanel {
             }
         });
     }
+    
     private void eventotxtApellidoMaterno(){
         txtAMaterno.getDocument().addDocumentListener(new javax.swing.event.DocumentListener(){
             @Override
@@ -401,13 +403,13 @@ public class PanelRegistroRecepcionistas extends javax.swing.JPanel {
             }
         });
     }
+    
     private void btnRegistarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistarActionPerformed
         try{     
             // Ingresar datos---------------------------------------------------------------------------
             Date Fecha = dpFN.getDate();
             LocalDate FechaNacimiento = Fecha.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();      
             //Crear UsuarioTT
-
             String Usser = txtUsuario.getText();
             String Password = txtContraseña.getText();    
             Usuario newUsser = new Usuario();
@@ -425,25 +427,16 @@ public class PanelRegistroRecepcionistas extends javax.swing.JPanel {
             NewRecepcionista.setCorreo(txtCorreo.getText());
             NewRecepcionista.setDireccion(txtDireccion.getText());
             NewRecepcionista.setUser(newUsser);
-
             ControladorUsuarios U = new ControladorUsuarios();
-            int IdUsuario = U.RegistrarUser(newUsser);
-
-            if(IdUsuario!=-1){
-                ControladorRecepcionista controladorRecepcionista = new ControladorRecepcionista();
-                //Mandar ID
-                newUsser.setIdUsuario(IdUsuario);
-                controladorRecepcionista.Agregar_Repcionista(NewRecepcionista);
-                JOptionPane.showMessageDialog(this, "Registro de recepcionista exitoso", "Exito", JOptionPane.INFORMATION_MESSAGE);
-                LimpiarCampos();
-            }
+            ControladorRecepcionista controladorRecepcionista = new ControladorRecepcionista();
+            controladorRecepcionista.Agregar_Repcionista(NewRecepcionista);
+            JOptionPane.showMessageDialog(this, "Registro de recepcionista exitoso", "Exito", JOptionPane.INFORMATION_MESSAGE);
+            LimpiarCampos();
         }
         catch(Exception e){
             JOptionPane.showMessageDialog(null, e.getMessage());
         }  
     }//GEN-LAST:event_btnRegistarActionPerformed
-
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnRegistar;

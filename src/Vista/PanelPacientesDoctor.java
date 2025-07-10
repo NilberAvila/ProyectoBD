@@ -108,14 +108,14 @@ public class PanelPacientesDoctor extends javax.swing.JPanel {
     
     private void llenarTablaPacientes(ArrayList<Paciente> lista) {
         DefaultTableModel modelo = (DefaultTableModel)tablaPacientes.getModel();
-            modelo.setRowCount(0); 
-            for (Paciente p : lista) {
-                modelo.addRow(new Object[]{
-                    p.getIdPaciente(),
-                    p,
-                    p.getNumDoc(),
-                });
-            }
+        modelo.setRowCount(0); 
+        for (Paciente p : lista) {
+            modelo.addRow(new Object[]{
+                p.getIdPaciente(),
+                p,
+                p.getNumDoc(),
+            });
+        }
     }
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents

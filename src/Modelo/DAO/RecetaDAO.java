@@ -5,42 +5,34 @@
 package Modelo.DAO;
 
 import Modelo.Receta;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 /**
  *
  * @author apnil
  */
 public class RecetaDAO {
-    public int RegistrarReceta(Receta res, int IdDoctor, int idPaciente)throws Exception{
-        int recetaId = -1;
-        try {
-            Connection con = Conexion.getConexion();
-            String consulta = """
-                                INSERT INTO Receta (PacienteID, DoctorID, MedicamentosDosis, Recomendaciones)
-                                VALUES (?, ?, ?, ?)
-                              """;
-            PreparedStatement pstmt = con.prepareStatement(consulta, Statement.RETURN_GENERATED_KEYS);
-            pstmt.setInt(1, idPaciente);
-            pstmt.setInt(2, IdDoctor);
-            pstmt.setString(3, res.getMedicamentosDosis());
-            pstmt.setString(4, res.getRecomendaciones());
+    public int registrarReceta(Receta receta) throws SQLException {
+        String sql = "INSERT INTO Recetas (ConsultaID, FechEmision, Observaciones) VALUES (?, ?, ?)";
+        try (Connection conn = Conexion.getConexion();
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            pstmt.executeUpdate();
-            ResultSet rs = pstmt.getGeneratedKeys();
-            if (rs.next()) {
-                recetaId = rs.getInt(1);
+            stmt.setInt(1, receta.getConsulta().getConsultaMedicaID());
+            stmt.setDate(2, Date.valueOf(receta.getFechEmision()));
+            stmt.setString(3, receta.getObservaciones());
+
+            int filasAfectadas = stmt.executeUpdate();
+
+            if (filasAfectadas > 0) {
+                try (ResultSet rs = stmt.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        return rs.getInt(1);
+                    }
+                }
             }
-            rs.close();
-            pstmt.close();
-            con.close();
         } catch (SQLException e) {
-            throw new Exception("Error al registrar los datos de la receta");
+            throw new SQLException("Error al registrar la receta: " + e.getMessage());
         }
-        return recetaId;
+        return -1;
     }
 }

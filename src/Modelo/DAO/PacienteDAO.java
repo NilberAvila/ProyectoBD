@@ -9,8 +9,9 @@ import Modelo.Paciente;
 import java.sql.*;
 import Modelo.DTO.PacienteDetalleDTO;
 import Modelo.DTO.PacienteDniDTO;
-import Modelo.DTO.PacienteResumenDTO;
+import Modelo.GrupoSanguineo;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Period;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
@@ -19,12 +20,15 @@ import javax.swing.JOptionPane;
  * @author apnil
  */
 public class PacienteDAO {
+    
     public String obtenerNombreProximoPaciente(int idDoctor) throws SQLException {
         String query = """
-                       SELECT TOP 1 P.Nombre + ' ' + P.ApellidoPaterno + ' ' + P.ApellidoMaterno AS Nombre
-                       FROM Paciente P
-                       JOIN Cita C ON C.PacienteID = P.PacienteID
-                       WHERE C.Estado = 'Pendiente' AND C.DoctorID = ?
+                       SELECT TOP 1 
+                           CONCAT(P.Nombre, ' ', P.ApellidoPaterno, ' ', P.ApellidoMaterno) AS Nombre
+                       FROM Pacientes P
+                       JOIN Citas C ON C.PacienteID = P.PacienteID
+                       WHERE C.Estado = 0 AND C.DoctorID = ?
+                       ORDER BY C.FechaHora ASC;
                        """;
         try{
             Connection con = Conexion.getConexion();
@@ -40,35 +44,41 @@ public class PacienteDAO {
             throw new SQLException("No se pudo cargar el paciente en espera: " + e.getMessage());
         }
     }
-    public ArrayList<PacienteResumenDTO> obtenerPacientesEnEspera(int idDoctor) throws SQLException {
-        ArrayList<PacienteResumenDTO> pacientes = new ArrayList<>();
-        String sql = """
-                     SELECT P.PacienteID, P.Nombre + ' ' + P.ApellidoPaterno + ' ' + P.ApellidoMaterno AS Nombre
-                     FROM Paciente P
-                     JOIN Cita C ON P.PacienteID = C.PacienteID
-                     WHERE C.Estado = 'Pendiente' AND C.DoctorID = ?
-                     """;
-        try {
-            Connection con = Conexion.getConexion();
-            PreparedStatement pstmt = con.prepareStatement(sql);
-            pstmt.setInt(1, idDoctor);
-            ResultSet rs = pstmt.executeQuery();
-            while (rs.next()) {
-                pacientes.add(new PacienteResumenDTO(rs.getInt("PacienteID"), rs.getString("Nombre")));
-            }
-        } catch (SQLException e) {
-            throw new SQLException("Error al cargar los pacientes: " + e.getMessage());
-        }
-        return pacientes;
-    }
+//    public ArrayList<PacienteResumenDTO> obtenerPacientesEnEspera(int idDoctor) throws SQLException {
+//        ArrayList<PacienteResumenDTO> pacientes = new ArrayList<>();
+//        String sql = """
+//                     SELECT 
+//                         P.PacienteID,
+//                         P.Nombre + ' ' + P.ApellidoPaterno + ' ' + P.ApellidoMaterno AS Nombre
+//                     FROM Pacientes P
+//                     JOIN Citas C ON P.PacienteID = C.PacienteID
+//                     WHERE C.Estado = 0 AND C.DoctorID = ?
+//                     """;
+//        try {
+//            Connection con = Conexion.getConexion();
+//            PreparedStatement pstmt = con.prepareStatement(sql);
+//            pstmt.setInt(1, idDoctor);
+//            ResultSet rs = pstmt.executeQuery();
+//            while (rs.next()) {
+//                pacientes.add(new PacienteResumenDTO(rs.getInt("PacienteID"), rs.getString("Nombre")));
+//            }
+//        } catch (SQLException e) {
+//            throw new SQLException("Error al cargar los pacientes: " + e.getMessage());
+//        }
+//        return pacientes;
+//    }
     
     public PacienteDetalleDTO pacientePorIdBasico(int idPaciente) throws Exception{
         JOptionPane.showMessageDialog(null, idPaciente);
         PacienteDetalleDTO pac = null;
         String sql = """
-                     SELECT P.Nombre + ' ' + P.ApellidoPaterno + ' ' + P.ApellidoMaterno AS Paciente,
-                     P.FechaNacimiento, P.Genero, P.GrupoSanguineo
-                     FROM Paciente P
+                     SELECT 
+                         P.Nombre + ' ' + P.ApellidoPaterno + ' ' + P.ApellidoMaterno AS Paciente,
+                         P.FechaNacimiento,
+                         P.Genero,
+                         GS.Nombre AS GrupoSanguineo
+                     FROM Pacientes P
+                     JOIN GrupoSanguineo GS ON GS.GrupoSanguineoID = P.GrupoSanguineo
                      WHERE P.PacienteID = ?
                      """;
         try(Connection con = Conexion.getConexion();
@@ -93,7 +103,8 @@ public class PacienteDAO {
     public ArrayList<Alergia> obtenerAlergiasPaciente(int idPaciente)throws Exception {
         ArrayList<Alergia> obAlergias = new ArrayList();
         String sql = """
-                     SELECT A.AlergiaID, A.NombreAlergia, A.TipoAlergia, A.Severidad FROM Alergia A
+                     SELECT A.AlergiaID, A.Nombre, A.TipoAlergia, A.Descripcion
+                     FROM Alergias A
                      JOIN Paciente_Alergia PA ON PA.AlergiaID = A.AlergiaID
                      WHERE PA.PacienteID = ?
                      """;
@@ -103,9 +114,9 @@ public class PacienteDAO {
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
                 Alergia alergia = new Alergia(rs.getInt("AlergiaID"));
-                alergia.setNombreAlergia(rs.getString("NombreAlergia"));
+                alergia.setNombreAlergia(rs.getString("Nombre"));
                 alergia.setTipoAlergia(rs.getString("TipoAlergia"));
-                alergia.setSeveridad(rs.getString("Severidad"));
+                alergia.setDescripcion(rs.getString("Descripcion"));
                 obAlergias.add(alergia);
             }
         }
@@ -114,10 +125,22 @@ public class PacienteDAO {
     
     public void citaAtendida(int idPaciente)throws Exception {
         String sql = """
-                     UPDATE Cita
-                     SET Estado = 'Atendida'
-                     FROM Cita
+                     UPDATE Citas
+                     SET Estado = 1
                      WHERE PacienteID = ?
+                     """;
+        try(Connection con = Conexion.getConexion();
+            PreparedStatement pstmt = con.prepareStatement(sql)){
+            pstmt.setInt(1, idPaciente);
+            pstmt.executeUpdate();
+        }
+    }
+    
+    public void emergenciaAtendida(int idPaciente) throws SQLException{
+        String sql = """
+                     UPDATE Emergencias
+                     SET Estado = 1
+                     WHERE EmergenciaID = ?;
                      """;
         try(Connection con = Conexion.getConexion();
             PreparedStatement pstmt = con.prepareStatement(sql)){
@@ -129,9 +152,10 @@ public class PacienteDAO {
     public String obtenerNombrePaciente(int IdPaciente)throws Exception{
         String doctor = "";
         String sql = """
-                     SELECT P.Nombre + ' ' + P.ApellidoMaterno + ' ' + P.ApellidoPaterno AS Nombre
-                     FROM Paciente P
-                     WHERE P.PacienteID = ?
+                     SELECT 
+                         P.Nombre + ' ' + P.ApellidoPaterno + ' ' + P.ApellidoMaterno AS Nombre
+                     FROM Pacientes P
+                     WHERE P.PacienteID = ?;
                      """;
         try(Connection con = Conexion.getConexion();
             PreparedStatement pstmt = con.prepareStatement(sql)){
@@ -147,8 +171,11 @@ public class PacienteDAO {
     public ArrayList<PacienteDniDTO> ObtenerPacientes()throws SQLException{
         ArrayList<PacienteDniDTO> pacientes = new ArrayList();
         String constulta = """
-                        SELECT PacienteID , NumeroDocumento, Nombre + ' ' + ApellidoPaterno + ' ' + ApellidoMaterno AS Nombre
-                        FROM Paciente
+                        SELECT 
+                            PacienteID, 
+                            NumeroDocumento, 
+                            Nombre + ' ' + ApellidoPaterno + ' ' + ApellidoMaterno AS Nombre
+                        FROM Pacientes;
                         """;
         try(Connection con = Conexion.getConexion();
             PreparedStatement pstmt = con.prepareStatement(constulta)){
@@ -161,94 +188,108 @@ public class PacienteDAO {
         return pacientes;
     }
     
-    public ArrayList<Paciente> obtenerPacientesDni()throws SQLException{
-        ArrayList<Paciente> pacientes = new ArrayList();
-        String sql = "SELECT * FROM Paciente WHERE Activo = 1";
+    public ArrayList<Paciente> obtenerPacientesDni() throws SQLException {
+        ArrayList<Paciente> pacientes = new ArrayList<>();
+        String sql = """
+                     SELECT 
+                         p.PacienteID, 
+                         p.Nombre, 
+                         p.ApellidoPaterno, 
+                         p.ApellidoMaterno, 
+                         p.NumeroDocumento, 
+                         p.TipoDocumento, 
+                         p.FechaNacimiento, 
+                         p.Genero, 
+                         p.Telefono, 
+                         p.Correo, 
+                         p.Direccion, 
+                         gs.GrupoSanguineoID,
+                         gs.Tipo AS TipoSanguineo
+                     FROM Pacientes p
+                     INNER JOIN GrupoSanguineo gs ON p.GrupoSanguineo = gs.GrupoSanguineoID
+                     WHERE p.Activo = 1;
+                     """;
+
         try (Connection con = Conexion.getConexion();
              PreparedStatement stmt = con.prepareStatement(sql)) {
             ResultSet rs = stmt.executeQuery();
-            while(rs.next()) {
-                Paciente p = new Paciente();
-                p.setIdPaciente(rs.getInt("PacienteID"));
-                p.setNombre(rs.getString("Nombre"));
-                p.setApellidoPaterno(rs.getString("ApellidoPaterno"));
-                p.setApellidoMaterno(rs.getString("ApellidoMaterno"));
-                p.setNumDoc(rs.getString("NumeroDocumento"));
-                p.setTipoDoc(rs.getString("TipoDocumento"));
-                p.setTelefono(rs.getString("Telefono"));
-                p.setFechaNacimiento(rs.getDate("FechaNacimiento").toLocalDate());
-                p.setGenero(rs.getString("Genero"));
-                p.setCorreo(rs.getString("Correo"));
-                p.setDireccion(rs.getString("Direccion"));
-                p.setGrupoSanguineo(rs.getString("GrupoSanguineo"));
-                pacientes.add(p);
+            while (rs.next()) {
+                GrupoSanguineo grupo = new GrupoSanguineo(
+                    rs.getInt("GrupoSanguineoID"),
+                    rs.getString("TipoSanguineo")
+                );
+                Paciente paciente = new Paciente(
+                    rs.getInt("PacienteID"),
+                    rs.getString("Nombre"),
+                    rs.getString("ApellidoPaterno"),
+                    rs.getString("ApellidoMaterno"),
+                    rs.getString("NumeroDocumento"),
+                    rs.getString("TipoDocumento"),
+                    rs.getString("Telefono"),
+                    rs.getDate("FechaNacimiento").toLocalDate(),
+                    rs.getString("Genero"),
+                    rs.getString("Correo"),
+                    rs.getString("Direccion"),
+                    grupo
+                );
+
+                pacientes.add(paciente);
             }
         }
+
         return pacientes;
     }
-    
-    public int registrar_paciente(Paciente paciente) throws Exception{
-        String sql = """
-        INSERT INTO Paciente (Nombre, ApellidoPaterno, ApellidoMaterno, NumeroDocumento, TipoDocumento, 
-                              Telefono, FechaNacimiento, Genero, Correo, Direccion, GrupoSanguineo)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""";
+
+    public int registrar_paciente(Paciente paciente) throws Exception {
+        String sql = "{CALL RegistrarPaciente(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
         int idPaciente;
         try (Connection con = Conexion.getConexion();
-        PreparedStatement stmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+             CallableStatement stmt = con.prepareCall(sql)) {
+
             stmt.setString(1, paciente.getNombre());
             stmt.setString(2, paciente.getApellidoPaterno());
             stmt.setString(3, paciente.getApellidoMaterno());
             stmt.setString(4, paciente.getNumDoc());
             stmt.setString(5, paciente.getTipoDoc());
-            stmt.setString(6, paciente.getTelefono());
-            stmt.setDate(7, Date.valueOf(paciente.getFechaNacimiento()));
-            stmt.setString(8, paciente.getGenero());
+            stmt.setDate(6, Date.valueOf(paciente.getFechaNacimiento()));
+            stmt.setString(7, paciente.getGenero());
+            stmt.setString(8, paciente.getTelefono());
             stmt.setString(9, paciente.getCorreo());
             stmt.setString(10, paciente.getDireccion());
-            stmt.setString(11, paciente.getGrupoSanguineo());
-            stmt.executeUpdate();
-
-            try (ResultSet rs = stmt.getGeneratedKeys()) {
-                if (rs.next()) {
-                    idPaciente = rs.getInt(1);
-                } else {
-                    throw new Exception("No se pudo obtener el ID del paciente insertado.");
-                }
-            }
-            if (!paciente.getAlergias().isEmpty()) {
-                for (Alergia alergia : paciente.getAlergias()) {
-                    AgregarAlergia(idPaciente, alergia);
-                }
-            }
+            stmt.setInt(11, paciente.getGrupoSanguineo().getGrupoSanguineoID());
+            stmt.registerOutParameter(12, java.sql.Types.INTEGER);
+            stmt.execute();
+            idPaciente = stmt.getInt(12);
             return idPaciente;
         } catch (SQLException e) {
             if (e.getErrorCode() == 2627) {
-                throw new SQLException("Error: El documento de indentidad ya está registrado");
+                throw new SQLException("Error: El documento de identidad o el correo ya está registrado");
             } else {
-                throw new SQLException("Error al registrar paciente: " + e.getMessage());
+                throw new SQLException("Error al registrar paciente: " + e.getMessage(), e);
             }
         }
     }
     
-    public int contarPacientes() throws Exception {
-        String sql = "SELECT COUNT(*) FROM Paciente";
-        try (Connection con = Conexion.getConexion();
-             PreparedStatement stmt = con.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
-
-            if (rs.next()) {
-                return rs.getInt(1);
-            } else {
-                throw new Exception("No se pudo contar los pacientes.");
-            }
-        } catch (SQLException e) {
-            throw new Exception("Error al contar pacientes: " + e.getMessage());
-        }
-    }
+    
+//    public int contarPacientes() throws Exception {
+//        String sql = "SELECT COUNT(*) FROM Paciente";
+//        try (Connection con = Conexion.getConexion();
+//             PreparedStatement stmt = con.prepareStatement(sql);
+//             ResultSet rs = stmt.executeQuery()) {
+//
+//            if (rs.next()) {
+//                return rs.getInt(1);
+//            } else {
+//                throw new Exception("No se pudo contar los pacientes.");
+//            }
+//        } catch (SQLException e) {
+//            throw new Exception("Error al contar pacientes: " + e.getMessage());
+//        }
+//    }
     
     public void Eliminar(int idPaciente) throws SQLException{
         String consulta = """
-                          UPDATE Paciente SET Activo = 0 WHERE PacienteID = ?;
+                          UPDATE Pacientes SET Activo = 0 WHERE PacienteID = ?
                           """;
         try {
             Connection con = Conexion.getConexion();
@@ -262,7 +303,7 @@ public class PacienteDAO {
     
     public void ActualizarDatos(int idPaciente, String correo, String telefono, String direccion)throws SQLException {
         String consulta = """
-                            UPDATE Paciente
+                            UPDATE Pacientes
                             SET Telefono = ?, Correo = ?, Direccion = ?
                             WHERE PacienteID = ?
                           """;
@@ -278,21 +319,21 @@ public class PacienteDAO {
             throw new SQLException("Error al actualizar datos: " + e.getMessage());
         }
     }
-    public void AgregarAlergia(int idPaciente, Alergia alergia)throws SQLException {
-        String sql = "{CALL AgregarAlergiaAPaciente(?, ?, ?, ?)}";
-        try (Connection con = Conexion.getConexion();
-             PreparedStatement pstmt = con.prepareCall(sql)) {
-            pstmt.setInt(1, idPaciente);
-            pstmt.setString(2, alergia.getNombreAlergia());
-            pstmt.setString(3, alergia.getTipoAlergia());
-            pstmt.setString(4, alergia.getSeveridad());
-            pstmt.execute();
-        } catch (SQLException e) {
-            throw new SQLException("Error al agregar alergia al paciente: " + e.getMessage());
-        }
-    }
+//    public void AgregarAlergia(int idPaciente, Alergia alergia)throws SQLException {
+//        String sql = "{CALL AgregarAlergiaAPaciente(?, ?, ?, ?)}";
+//        try (Connection con = Conexion.getConexion();
+//             PreparedStatement pstmt = con.prepareCall(sql)) {
+//            pstmt.setInt(1, idPaciente);
+//            pstmt.setString(2, alergia.getNombreAlergia());
+//            pstmt.setString(3, alergia.getTipoAlergia());
+//            pstmt.setString(4, alergia.getSeveridad());
+//            pstmt.execute();
+//        } catch (SQLException e) {
+//            throw new SQLException("Error al agregar alergia al paciente: " + e.getMessage());
+//        }
+//    }
     public int obtenerCantidadPacientes()throws SQLException {
-        String sql = "SELECT COUNT(*) AS TotalPacientes FROM Paciente";
+        String sql = "SELECT COUNT(*) AS TotalPacientes FROM Pacientes;";
         try (Connection conn = Conexion.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -306,7 +347,7 @@ public class PacienteDAO {
         return 0;
     }
     public double obtenerEdadPromedioPacientes()throws SQLException {
-        String sql = "SELECT AVG(DATEDIFF(YEAR, FechaNacimiento, GETDATE())) AS EdadPromedio FROM Paciente";
+        String sql = "SELECT AVG(DATEDIFF(YEAR, FechaNacimiento, GETDATE())) AS EdadPromedio FROM Pacientes";
         try (Connection conn = Conexion.getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -323,9 +364,9 @@ public class PacienteDAO {
     public int[] obtenerPacientesActivosInactivos()throws SQLException {
         String sql = """
                      SELECT 
-                      SUM(CASE WHEN Activo = 1 THEN 1 ELSE 0 END) AS Activos,
-                      SUM(CASE WHEN Activo = 0 THEN 1 ELSE 0 END) AS Inactivos
-                     FROM Paciente
+                         SUM(CASE WHEN Activo = 1 THEN 1 ELSE 0 END) AS Activos,
+                         SUM(CASE WHEN Activo = 0 THEN 1 ELSE 0 END) AS Inactivos
+                     FROM Pacientes;
                      """;
 
         try (Connection conn = Conexion.getConexion();
@@ -342,4 +383,5 @@ public class PacienteDAO {
 
         return new int[]{0, 0};
     }
+    
 }

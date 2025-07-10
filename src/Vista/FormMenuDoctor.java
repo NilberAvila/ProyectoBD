@@ -19,10 +19,10 @@ public class FormMenuDoctor extends javax.swing.JFrame {
     /**
      * Creates new form FormMenuDoctor
      */
-    private int idDoctor;
+    private final int idDoctor;
     int xMouse, yMouse;
     private Color colorTemp;
-    private Colores colores = new Colores(new Color(25, 118, 210));
+    private final Colores colores = new Colores(new Color(25, 118, 210));
     
     public FormMenuDoctor(int idDoctor) {
         initComponents();
@@ -43,6 +43,8 @@ public class FormMenuDoctor extends javax.swing.JFrame {
         btnAtender = new javax.swing.JButton();
         btnPerfil = new javax.swing.JButton();
         btnBuscarPaciente = new javax.swing.JButton();
+        btnAtenderEmergencia = new javax.swing.JButton();
+        btnDarAlta = new javax.swing.JButton();
         PanelTitulo = new javax.swing.JPanel();
         lblTitulo = new javax.swing.JLabel();
         PanelHijo = new javax.swing.JPanel();
@@ -164,7 +166,35 @@ public class FormMenuDoctor extends javax.swing.JFrame {
                 btnBuscarPacienteActionPerformed(evt);
             }
         });
-        PanelMenu1.add(btnBuscarPaciente, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 190, 310, 80));
+        PanelMenu1.add(btnBuscarPaciente, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 350, 310, 80));
+
+        btnAtenderEmergencia.setBackground(new java.awt.Color(25, 118, 210));
+        btnAtenderEmergencia.setFont(new java.awt.Font("Comic Sans MS", 1, 24)); // NOI18N
+        btnAtenderEmergencia.setForeground(new java.awt.Color(255, 255, 255));
+        btnAtenderEmergencia.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Recursos/cpr.png"))); // NOI18N
+        btnAtenderEmergencia.setText("Atender Emergencia");
+        btnAtenderEmergencia.setBorder(null);
+        btnAtenderEmergencia.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        btnAtenderEmergencia.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAtenderEmergenciaActionPerformed(evt);
+            }
+        });
+        PanelMenu1.add(btnAtenderEmergencia, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 190, 310, 80));
+
+        btnDarAlta.setBackground(new java.awt.Color(25, 118, 210));
+        btnDarAlta.setFont(new java.awt.Font("Comic Sans MS", 1, 24)); // NOI18N
+        btnDarAlta.setForeground(new java.awt.Color(255, 255, 255));
+        btnDarAlta.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Recursos/servicio-al-cliente.png"))); // NOI18N
+        btnDarAlta.setText("Dar alta");
+        btnDarAlta.setBorder(null);
+        btnDarAlta.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        btnDarAlta.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDarAltaActionPerformed(evt);
+            }
+        });
+        PanelMenu1.add(btnDarAlta, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 430, 310, 80));
 
         jPanel1.add(PanelMenu1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, -10, 310, 730));
 
@@ -236,7 +266,7 @@ public class FormMenuDoctor extends javax.swing.JFrame {
     }//GEN-LAST:event_PanelSuperiorMouseMoved
 
     private void btnAtenderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAtenderActionPerformed
-        cambiarVistaPanel(btnAtender, "AtenderPacientes", new PanelAtenderPacientes(idDoctor));
+        cambiarVistaPanel(btnAtender, "Atender Pacientes", new PanelAtenderPacientes(idDoctor));
     }//GEN-LAST:event_btnAtenderActionPerformed
 
     private void btnPerfilActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPerfilActionPerformed
@@ -251,6 +281,14 @@ public class FormMenuDoctor extends javax.swing.JFrame {
         cambiarVistaPanel(btnBuscarPaciente, "Pacientes", new PanelPacientesDoctor());
     }//GEN-LAST:event_btnBuscarPacienteActionPerformed
 
+    private void btnAtenderEmergenciaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAtenderEmergenciaActionPerformed
+        cambiarVistaPanel(btnAtenderEmergencia, "Atender Emergencias", new PanelAtenderEmergencias(idDoctor));
+    }//GEN-LAST:event_btnAtenderEmergenciaActionPerformed
+
+    private void btnDarAltaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDarAltaActionPerformed
+        cambiarVistaPanel(btnDarAlta, "Dar Alta", new PanelDarAlta());
+    }//GEN-LAST:event_btnDarAltaActionPerformed
+
     private void EstablecerColor(JButton btn){
         colorTemp = colores.generarColorAleatorio();
         btn.setBackground(colorTemp);
@@ -260,14 +298,14 @@ public class FormMenuDoctor extends javax.swing.JFrame {
         btnAtender.setBackground(colores.colorPrincipal);
         btnPerfil.setBackground(colores.colorPrincipal);
         btnBuscarPaciente.setBackground(colores.colorPrincipal);
+        btnAtenderEmergencia.setBackground(colores.colorPrincipal);
+        btnDarAlta.setBackground(colores.colorPrincipal);
         btnInicio.setBackground(new Color(25,85,215));
         EstablecerColor(botonSeleccionado);
         lblTitulo.setText(titulo);
         MostrarPanelHijo.Mostrar(panelMostrar, PanelHijo, 970, 620);
     }
-    /**
-     * @param args the command line arguments
-     */
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel PanelHijo;
@@ -275,8 +313,10 @@ public class FormMenuDoctor extends javax.swing.JFrame {
     private javax.swing.JPanel PanelSuperior;
     private javax.swing.JPanel PanelTitulo;
     private javax.swing.JButton btnAtender;
+    private javax.swing.JButton btnAtenderEmergencia;
     private javax.swing.JButton btnBuscarPaciente;
     private javax.swing.JButton btnCerrar;
+    private javax.swing.JButton btnDarAlta;
     private javax.swing.JButton btnInicio;
     private javax.swing.JButton btnPerfil;
     private javax.swing.JPanel jPanel1;

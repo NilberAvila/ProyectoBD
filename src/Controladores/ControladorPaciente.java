@@ -9,7 +9,7 @@ import Modelo.Paciente;
 import Modelo.DAO.PacienteDAO;
 import Modelo.DTO.PacienteDetalleDTO;
 import Modelo.DTO.PacienteDniDTO;
-import Modelo.DTO.PacienteResumenDTO;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 /**
  *
@@ -24,9 +24,9 @@ public class ControladorPaciente {
         this.pacienteDAO = new PacienteDAO();
     }
     
-    public ArrayList<PacienteResumenDTO> obtenerPacientesEnEspera(int idDoctor) throws Exception {
-        return pacienteDAO.obtenerPacientesEnEspera(idDoctor);
-    }
+//    public ArrayList<PacienteResumenDTO> obtenerPacientesEnEspera(int idDoctor) throws Exception {
+//        return pacienteDAO.obtenerPacientesEnEspera(idDoctor);
+//    }
     
     public PacienteDetalleDTO pacientePorIdBasico(int idPaciente) throws Exception{
         return pacienteDAO.pacientePorIdBasico(idPaciente);
@@ -39,6 +39,10 @@ public class ControladorPaciente {
     public void citaAtendida(int idPaciente)throws Exception {
         pacienteDAO.citaAtendida(idPaciente);
     }
+    
+     public void emergenciaAtendida(int idPaciente) throws Exception{
+         pacienteDAO.emergenciaAtendida(idPaciente);
+     }
     
     public String obtenerNombrePaciente(int idPaciente)throws Exception{
         return pacienteDAO.obtenerNombrePaciente(idPaciente);
@@ -73,10 +77,10 @@ public class ControladorPaciente {
         return pacienteDAO.registrar_paciente(paciente);
     }
 
-    public int contarPacientes() throws Exception {
-        return pacienteDAO.contarPacientes();
-    }
-    
+//    public int contarPacientes() throws Exception {
+//        return pacienteDAO.contarPacientes();
+//    }
+//    
     public void EliminarPaciente(int idPaciente) throws Exception{//mas q eliminar poner inactivo xd
         pacienteDAO.Eliminar(idPaciente);
     }
@@ -85,9 +89,9 @@ public class ControladorPaciente {
         pacienteDAO.ActualizarDatos(idPaciente, correo, telefono, direccion);
     }
     
-    public void AgregarAlergia(int idPaciente, Alergia alergia)throws Exception{
-        pacienteDAO.AgregarAlergia(idPaciente, alergia);
-    } 
+//    public void AgregarAlergia(int idPaciente, Alergia alergia)throws Exception{
+//        pacienteDAO.AgregarAlergia(idPaciente, alergia);
+//    } 
     public int obtenerCantidadPacientes()throws Exception{
         return pacienteDAO.obtenerCantidadPacientes();
     }
@@ -97,5 +101,8 @@ public class ControladorPaciente {
     public int[] obtenerPacientesActivosInactivos()throws Exception{
         return  pacienteDAO.obtenerPacientesActivosInactivos();
     }
+//    public void Alta(int HabitacionAsignadaID)throws Exception{
+//        pacienteDAO.Alta_Paciente(HabitacionAsignadaID);
+//    }
 
 }

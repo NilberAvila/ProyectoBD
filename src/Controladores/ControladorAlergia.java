@@ -6,6 +6,7 @@ package Controladores;
 
 import Modelo.Alergia;
 import Modelo.DAO.AlergiaDAO;
+import java.util.ArrayList;
 
 /**
  *
@@ -25,5 +26,19 @@ public class ControladorAlergia {
     
     public void agregarRelacionPacienteAlergia(int pacienteID, int alergiaID)throws Exception{
         alergiaDAO.agregarRelacionPacienteAlergia(pacienteID, alergiaID);
+    }
+    
+    public ArrayList<Alergia> ObtenerAlergias()throws Exception{
+        return alergiaDAO.ObtenerAlergias();
+    }
+    public ArrayList<Alergia> filtrarAlergiasPorTexto(ArrayList<Alergia> listaOriginal, String texto) {
+        ArrayList<Alergia> listaFiltrada = new ArrayList<>();
+        String textoLower = texto.toLowerCase();
+        for (Alergia a : listaOriginal) {
+            if (a.getNombreAlergia().toLowerCase().contains(textoLower)){
+                listaFiltrada.add(a);
+            }
+        }
+        return listaFiltrada;
     }
 }

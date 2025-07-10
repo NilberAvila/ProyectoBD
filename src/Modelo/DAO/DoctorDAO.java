@@ -25,8 +25,8 @@ public class DoctorDAO {
     public int obtenerCantidadCitasPendientes(int idDoctor) throws SQLException {
         String consulta = """
                        SELECT COUNT(*) AS Total
-                       FROM Cita
-                       WHERE Estado = 'Pendiente' AND DoctorID = ?
+                       FROM Citas
+                       WHERE Estado = 0 AND DoctorID = ?
                        """;
         try {
             Connection con = Conexion.getConexion();
@@ -48,11 +48,11 @@ public class DoctorDAO {
                        SELECT 
                            T.HoraInicio,
                            T.HoraFin
-                       FROM Doctor D
-                       JOIN Doctor_Turno DT ON D.DoctorID = DT.DoctorID
-                       JOIN Turno T ON DT.TurnoID = T.TurnoID
+                       FROM Doctores D
+                       JOIN AsignacionTurno AT ON D.DoctorID = AT.DoctorID
+                       JOIN Turnos T ON AT.TurnoID = T.TurnoID
                        WHERE D.DoctorID = ?
-                         AND UPPER(DT.NombreDia) = UPPER(DATENAME(WEEKDAY, DATEADD(HOUR, -5, GETUTCDATE())))
+                         AND UPPER(AT.NombreDia) = UPPER(DATENAME(WEEKDAY, DATEADD(HOUR, -5, GETUTCDATE())))
                          AND CONVERT(TIME, DATEADD(HOUR, -5, GETUTCDATE())) 
                              BETWEEN T.HoraInicio AND T.HoraFin;
                        """;
@@ -77,8 +77,9 @@ public class DoctorDAO {
 
     public String obtenerNombreDoctor(int idDoctor) throws SQLException {
         String consulta = """
-                       SELECT Nombre + ' ' + ApellidoPaterno + ' ' + ApellidoMaterno AS Nombre
-                       FROM Doctor
+                       SELECT 
+                           Nombre + ' ' + ApellidoPaterno + ' ' + ApellidoMaterno AS Nombre
+                       FROM Doctores
                        WHERE DoctorID = ?
                        """;
         try (Connection con = Conexion.getConexion();
@@ -98,18 +99,16 @@ public class DoctorDAO {
     
     public DoctorDTO buscarDatosBasicosPorId(int idDoctor) throws SQLException {
         String consulta = """
-            SELECT D.DoctorID, D.Nombre, D.ApellidoPaterno, D.ApellidoMaterno,
-                   D.Genero, D.FechaNacimiento, D.Telefono, D.Correo, D.Direccion, D.CodigoColegiatura, D.NumeroDocumento
-            FROM Doctor D
-            WHERE D.DoctorID = ?
-        """;
+                          SELECT D.DoctorID, D.Nombre, D.ApellidoPaterno, D.ApellidoMaterno, D.Genero, D.FechaNacimiento, D.Telefono, D.Correo, D.Direccion, D.CodigoColegiatura, D.NumeroDocumento
+                          FROM Doctores D
+                          WHERE D.DoctorID = ?
+                          """;
         try (Connection con = Conexion.getConexion();
             PreparedStatement stmt = con.prepareStatement(consulta)) {
             stmt.setInt(1, idDoctor);
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                int idDoc = rs.getInt("DoctorID");
                 String nombreCompleto = rs.getString("Nombre") + " " + rs.getString("ApellidoPaterno") + " " + rs.getString("ApellidoMaterno");
                 LocalDate fechaNac = rs.getDate("FechaNacimiento").toLocalDate();
                 int edad = Period.between(fechaNac, LocalDate.now()).getYears();
@@ -134,7 +133,7 @@ public class DoctorDAO {
                 return doc;
             }
         }catch (SQLException e) {
-            throw new SQLException("Error al buscar los datos del paciente" + e.getMessage());
+            throw new SQLException("Error al buscar los datos del doctor" + e.getMessage());
         }
         return null;
     }
@@ -142,10 +141,12 @@ public class DoctorDAO {
     private ArrayList<EspecialidadDTO> obtenerEspecialidadesNombres(int idDoctor, Connection con) throws SQLException {
         ArrayList<EspecialidadDTO> especialidades = new ArrayList<>();
         String consulta = """
-                     SELECT E.nombre, E.descripcion
-                     FROM Especialidad E
-                     JOIN Doctor_Especialidad DE ON DE.EspecialidadID = E.EspecialidadID
-                     WHERE DE.DoctorID = ?
+                     SELECT 
+                         E.Nombre, 
+                         E.Descripcion
+                     FROM Especialidades E
+                     JOIN AsigarEspecialidad AE ON AE.EspecialidadID = E.EspecialidadID
+                     WHERE AE.DoctorID = ?
                      """;
         try (PreparedStatement stmt = con.prepareStatement(consulta)) {
             stmt.setInt(1, idDoctor);
@@ -163,7 +164,7 @@ public class DoctorDAO {
 
     public void actualizarDatos(int id, String correo, String telefono, String direccion) throws SQLException {
         String consulta = """
-            UPDATE Doctor
+            UPDATE Doctores
             SET Telefono = ?, Correo = ?, Direccion = ?
             WHERE DoctorID = ?
         """;
@@ -181,7 +182,7 @@ public class DoctorDAO {
     
     public ArrayList<DoctorSimpleDTO> DoctoresPorFechaHora(LocalDateTime fechaHora, String Especialidad)throws SQLException{
         ArrayList<DoctorSimpleDTO> doctores = new ArrayList<>();
-        String procedimiento = "{CALL ObtenerDoctoresPorFechaHoraYEspecialidad(?, ?, ?)}";
+        String procedimiento = "EXEC ObtenerDoctoresPorFechaHoraYEspecialidad ?, ?, ?";
         try (Connection con = Conexion.getConexion();
             CallableStatement stmt = con.prepareCall(procedimiento)) {
             stmt.setDate(1, Date.valueOf(fechaHora.toLocalDate()));
@@ -199,41 +200,40 @@ public class DoctorDAO {
     }
     
     public int Agregar_Doctor(Doctor doctor) throws SQLException {
-        String sql = "INSERT INTO Doctor(Nombre,ApellidoPaterno,ApellidoMaterno,NumeroDocumento,TipoDocumento,FechaNacimiento,Genero,Telefono,Correo,Direccion,CodigoColegiatura,UsuarioID) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
-        try {Connection conn = Conexion.getConexion();
-            PreparedStatement Dstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            Dstmt.setString(1, doctor.getNombre());
-            Dstmt.setString(2, doctor.getApellidoPaterno());
-            Dstmt.setString(3, doctor.getApellidoMaterno());
-            Dstmt.setString(4, doctor.getNumDoc());
-            Dstmt.setString(5, doctor.getTipoDoc());
-            Dstmt.setDate(6, java.sql.Date.valueOf(doctor.getFechaNacimiento()));
-            Dstmt.setString(7, doctor.getGenero());
-            Dstmt.setString(8, doctor.getTelefono());
-            Dstmt.setString(9, doctor.getCorreo());
-            Dstmt.setString(10, doctor.getDireccion());
-            Dstmt.setString(11, doctor.getCodigoColegiatura());                
-            Dstmt.setInt(12, doctor.getUser().getIdUsuario());
-            int filas = Dstmt.executeUpdate();
-            if(filas>0){
-                ResultSet rs = Dstmt.getGeneratedKeys();
-                if(rs.next()){
-                    return rs.getInt(1);
-                }
-            }
-        }
-        catch(SQLException e){
+        String sql = "{CALL RegistrarDoctorUsuario(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
+        try (Connection conn = Conexion.getConexion();
+             CallableStatement stmt = conn.prepareCall(sql)) {
+
+            stmt.setString(1, doctor.getUser().getNombreUsuario());
+            stmt.setString(2, doctor.getUser().getContraseña());
+            stmt.setString(3, doctor.getNombre());
+            stmt.setString(4, doctor.getApellidoPaterno());
+            stmt.setString(5, doctor.getApellidoMaterno());
+            stmt.setString(6, doctor.getNumDoc());
+            stmt.setString(7, doctor.getTipoDoc());
+            stmt.setDate(8, Date.valueOf(doctor.getFechaNacimiento()));
+            stmt.setString(9, doctor.getGenero());
+            stmt.setString(10, doctor.getTelefono());
+            stmt.setString(11, doctor.getCorreo());
+            stmt.setString(12, doctor.getDireccion());
+            stmt.setString(13, doctor.getCodigoColegiatura());
+            stmt.registerOutParameter(14, java.sql.Types.INTEGER); // DoctorID OUTPUT
+
+            stmt.execute();
+
+            return stmt.getInt(14); // Devolver el ID generado del doctor
+        } catch (SQLException e) {
             if (e.getErrorCode() == 2627) {
-                throw new SQLException("Error: El documento de indentidad ya está registrado");
+                throw new SQLException("Error: El documento de identidad ya está registrado");
             } else {
                 throw new SQLException("Error al registrar un nuevo Doctor: " + e.getMessage());
             }
-        }    
-        return -1;
+        }
     }
+
     
     public void AsignarEspecialidad(int DoctorID,int EspecialidadID)throws Exception{
-        String sql = "INSERT INTO Doctor_Especialidad(DoctorID,EspecialidadID) VALUES (?,?)";
+        String sql = "INSERT INTO AsigarEspecialidad (DoctorID, EspecialidadID) VALUES (?, ?)";
          try {Connection conn = Conexion.getConexion();
             PreparedStatement Estmt = conn.prepareStatement(sql);
             Estmt.setInt(1, DoctorID);
@@ -246,8 +246,8 @@ public class DoctorDAO {
     }
     
     public void Asignar_Turnos(Turno turno, int DoctorID)throws SQLException{
-        String sql = "INSERT INTO Turno(HoraInicio,HoraFin) VALUES (?,?)";
-        String SqlRelacion = "INSERT INTO Doctor_Turno(DoctorID,TurnoID,NombreDia) VALUES (?,?,?)";
+        String sql = "INSERT INTO Turnos (HoraInicio, HoraFin) VALUES (?, ?)";
+        String SqlRelacion = "INSERT INTO AsignacionTurno (DoctorID, TurnoID, NombreDia) VALUES (?, ?, ?)";
         
         try {
             Connection conn = Conexion.getConexion();
@@ -276,7 +276,7 @@ public class DoctorDAO {
     public ArrayList<DoctorSimpleDTO> ObtenerDoctor() throws SQLException{
         ArrayList<DoctorSimpleDTO> ListaDoctor = new ArrayList();
         
-        String sql = "SELECT DoctorID, Nombre + ' ' + ApellidoPaterno + ' ' +ApellidoMaterno AS Nombre From Doctor";
+        String sql = "SELECT DoctorID, Nombre + ' ' + ApellidoPaterno + ' ' + ApellidoMaterno AS Nombre FROM Doctores;";
         try {
             Connection conn = Conexion.getConexion();
             PreparedStatement Astmt = conn.prepareStatement(sql);

@@ -13,7 +13,7 @@ import Util.Validador;
 public class Alergia {
     private int IdAlergia;
     private String NombreAlergia;
-    private String Severidad;
+    private String Descripcion;
     private String TipoAlergia;
 
     public Alergia() {
@@ -23,9 +23,10 @@ public class Alergia {
         this.IdAlergia = idAlergia;
     }
 
-    public Alergia(String NombreAlergia, String Severidad, String TipoAlergia) {
+    public Alergia(int IdAlergia, String NombreAlergia, String Descripcion, String TipoAlergia) {
+        this.IdAlergia = IdAlergia;
         this.NombreAlergia = NombreAlergia;
-        this.Severidad = Severidad;
+        this.Descripcion = Descripcion;
         this.TipoAlergia = TipoAlergia;
     }
 
@@ -45,12 +46,12 @@ public class Alergia {
         this.NombreAlergia = Validador.validarTexto(NombreAlergia, "El nombre de la alergia");
     }
 
-    public String getSeveridad() {
-        return Severidad;
+    public String getDescripcion() {
+        return Descripcion;
     }
 
-    public void setSeveridad(String severidad){
-        this.Severidad = Validador.validarTextoPlaceHolder(severidad, "Ingrese descripción", "La severidad");
+    public void setDescripcion(String Descripcion) {
+        this.Descripcion = Validador.validarTexto(Descripcion, "El nombre de la alergia");;
     }
 
     public String getTipoAlergia() {
@@ -62,6 +63,11 @@ public class Alergia {
     }
     
     public String verAlergia(){
-        return this.NombreAlergia + "->  Severidad: " + this.Severidad + "|  Tipo: "  + this.TipoAlergia;
+        return this.NombreAlergia + "->  Descripcion: " + this.Descripcion + "|  Tipo: "  + this.TipoAlergia;
+    }
+
+    @Override
+    public String toString() {
+        return NombreAlergia;
     }
 }

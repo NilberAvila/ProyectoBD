@@ -44,7 +44,7 @@ public class JDialogActualizarPaciente extends javax.swing.JDialog {
             txtEdad.setText(Integer.toString(pac.verEdad()));
             txtTelefono.setText(pac.getTelefono());
             txtGenero.setText(pac.getGenero());
-            txtTipoSangre.setText(pac.getGrupoSanguineo());
+            txtTipoSangre.setText(Integer.toString(pac.getGrupoSanguineo().getGrupoSanguineoID()));
             inicializarPlaceholders(pac.getCorreo(), pac.getDireccion(), pac.getTelefono());
         } catch (Exception e) {
             JOptionPane.showMessageDialog(rootPane, e.getMessage());
@@ -156,7 +156,7 @@ public class JDialogActualizarPaciente extends javax.swing.JDialog {
         jLabel13.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel13.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel13.setText("Edad");
-        jPanel3.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 240, 50, 30));
+        jPanel3.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 240, 50, 30));
 
         jLabel15.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel15.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -170,13 +170,13 @@ public class JDialogActualizarPaciente extends javax.swing.JDialog {
         txtDocIdentidad.setEnabled(false);
         jPanel3.add(txtDocIdentidad, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 120, 260, 30));
         jPanel3.add(jSeparator12, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 150, 260, 10));
-        jPanel3.add(jSeparator14, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 300, 50, 10));
+        jPanel3.add(jSeparator14, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 300, 50, 10));
 
         txtEdad.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         txtEdad.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         txtEdad.setText("00");
         txtEdad.setEnabled(false);
-        jPanel3.add(txtEdad, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 270, 50, 30));
+        jPanel3.add(txtEdad, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 270, 50, 30));
 
         jLabel18.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel18.setText("Telefono");
@@ -199,7 +199,7 @@ public class JDialogActualizarPaciente extends javax.swing.JDialog {
         txtCorreo.setForeground(new java.awt.Color(153, 153, 153));
         txtCorreo.setBorder(null);
         jPanel3.add(txtCorreo, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 120, 210, 30));
-        jPanel3.add(jSeparator16, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 300, 250, 10));
+        jPanel3.add(jSeparator16, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 300, 210, 10));
 
         txtTelefono.setBackground(new java.awt.Color(242, 242, 242));
         txtTelefono.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
@@ -221,7 +221,7 @@ public class JDialogActualizarPaciente extends javax.swing.JDialog {
         txtTipoSangre.setForeground(new java.awt.Color(153, 153, 153));
         txtTipoSangre.setBorder(null);
         txtTipoSangre.setEnabled(false);
-        jPanel3.add(txtTipoSangre, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 270, 250, 30));
+        jPanel3.add(txtTipoSangre, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 270, 210, 30));
 
         jLabel25.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel25.setText("Tipo de Sangre");
